@@ -1,0 +1,53 @@
+{% extends "./base.html" %}
+{% block content %}
+<section class="relative min-h-screen bg-[#0f0f0f] px-6 pt-32 pb-20">
+  <div class="max-w-3xl mx-auto relative z-10">
+    <div class="mb-12 text-center">
+        <h2 class="text-yellow-500 font-serif font-black text-4xl uppercase italic tracking-widest">Event Booking</h2>
+        <p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Host your special moments at Gojo House</p>
+    </div>
+
+    <form action="{{ url_for('customer.submit_event') }}" method="POST" class="space-y-8 p-10 rounded-3xl border border-white/5 bg-white/[0.02]">
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Full Name</label>
+          <input type="text" name="customer_name" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Phone Number</label>
+          <input type="tel" name="phone_number" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Event Type</label>
+          <select name="event_type" required class="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+            <option value="Birthday">Birthday</option>
+            <option value="Wedding">Wedding</option>
+            <option value="Corporate">Corporate</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Date</label>
+          <input type="date" name="event_date" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Est. Pax</label>
+          <input type="number" name="estimated_pax" placeholder="20+" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Special Requirements (Optional)</label>
+        <textarea name="requirements" rows="4" placeholder="Themes, dietary restrictions, etc." class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50"></textarea>
+      </div>
+
+      <button type="submit" class="w-full py-5 rounded-2xl bg-yellow-500 text-black font-black tracking-[0.2em] uppercase hover:bg-yellow-400 transition-all">
+        Send Inquiry
+      </button>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Security Audit Logs{% endblock %}
+{% block header_title %}Security & Audit{% endblock %}
+{% block sub_title %}System Logs{% endblock %}
+
+{% block admin_content %}
+<div class="bg-white/[0.02] border border-white/5 rounded-3xl overflow-hidden backdrop-blur-md">
+    <div class="p-8 border-b border-white/5 flex justify-between items-center">
+        <div>
+            <h4 class="text-xs font-black uppercase tracking-widest text-white">System Activity Feed</h4>
+            <p class="text-[10px] text-gray-500 uppercase mt-1">Real time monitoring of all administrative actions</p>
+        </div>
+        <div class="flex space-x-2">
+            <span class="flex items-center space-x-2 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
+                <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                <span class="text-[9px] text-green-500 font-black uppercase tracking-widest">System Live</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-white/[0.01]">
+                    <th class="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-black">Timestamp</th>
+                    <th class="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-black">User Identity</th>
+                    <th class="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-black">Action Executed</th>
+                    <th class="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-black">System Module</th>
+                    <th class="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-black">Origin IP</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/[0.03]">
+                {% for log in logs %}
+                <tr class="hover:bg-white/[0.02] transition-colors group">
+                    <td class="px-8 py-4 text-[11px] text-gray-500 font-mono italic">
+                        {{ log.created_at }}
+                    </td>
+                    <td class="px-8 py-4">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-white group-hover:text-red-500 transition-colors">{{ log.user_email }}</span>
+                            <span class="text-[9px] text-gray-600 font-mono tracking-tighter uppercase">{{ log.user_id[:13] }}...</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-4">
+                        <span class="px-3 py-1 rounded-lg text-[9px] font-black tracking-tighter uppercase 
+                            {% if 'SUCCESS' in log.action or 'LOGIN' in log.action %}
+                                bg-green-600/10 text-green-500 border border-green-600/20
+                            {% elif 'BYPASS' in log.action %}
+                                bg-yellow-600/10 text-yellow-500 border border-yellow-600/20
+                            {% else %}
+                                bg-red-600/10 text-red-500 border border-red-600/20
+                            {% endif %}">
+                            {{ log.action.replace('_', ' ') }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-4">
+                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{{ log.module }}</span>
+                    </td>
+                    <td class="px-8 py-4 text-[11px] text-gray-500 font-mono">
+                        {{ log.ip_address }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-8 py-20 text-center">
+                        <p class="text-xs text-gray-600 uppercase font-black tracking-[0.3em]">No security records found</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="p-6 border-t border-white/5 bg-white/[0.01]">
+        <p class="text-[9px] text-gray-600 text-center uppercase tracking-[0.2em] font-bold">End of Log Feed — Secure Connection Active</p>
+    </div>
+</div>
+{% endblock %}

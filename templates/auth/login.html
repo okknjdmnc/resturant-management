@@ -1,0 +1,74 @@
+{% extends "./base.html" %}
+{% block title %}GOJO HOUSE - Management Login{% endblock %}
+{% block content %}
+
+<section class="min-h-screen flex items-center justify-center bg-[#050505] px-6 relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute top-1/4 -left-20 w-80 h-80 bg-red-600/5 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-1/4 -right-20 w-80 h-80 bg-yellow-600/5 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="max-w-md w-full relative z-10">
+        <div class="text-center mb-10">
+            <h1 class="font-serif font-black text-4xl text-white italic uppercase tracking-tighter mb-2">
+                GOJO <span class="text-red-600">HOUSE</span>
+            </h1>
+            <p class="text-[10px] text-gray-500 uppercase tracking-[0.4em] font-bold">Internal Management System</p>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/5 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-2xl">
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-white uppercase tracking-widest">Authentication</h2>
+                <p class="text-xs text-gray-500 mt-1">Authorized personnel access only.</p>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] uppercase tracking-widest p-4 rounded-xl mb-6 text-center font-bold">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('auth.login_post') }}" method="POST" class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] uppercase text-gray-400 font-bold ml-1 tracking-widest">User Email</label>
+                    <div class="relative">
+                        <input type="email" name="email"  placeholder="example@gojohouse.com" 
+                            class="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:border-red-500/50 focus:bg-white/[0.05] transition-all">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] uppercase text-gray-400 font-bold tracking-widest">Security Key</label>
+                    </div>
+                    <div class="relative">
+                        <input type="password" name="password"  placeholder="••••••••" 
+                            class="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:border-red-500/50 focus:bg-white/[0.05] transition-all">
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" 
+                        class="w-full py-5 rounded-2xl bg-red-600 text-white font-black tracking-[0.3em] uppercase text-xs hover:bg-red-500 active:scale-[0.98] transition-all shadow-xl shadow-red-600/10">
+                        Verify Identity
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="text-center mt-8">
+            <p class="text-[10px] text-gray-600 uppercase tracking-widest font-medium">
+                Protected by Gojo House Security Protocol
+            </p>
+            <a href="/" class="inline-block mt-4 text-[10px] text-gray-500 hover:text-white transition-colors uppercase tracking-widest border-b border-transparent hover:border-gray-500 pb-1">
+                Return to Public Site
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

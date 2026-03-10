@@ -1,0 +1,39 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block header_title %}System Overview{% endblock %}
+{% block sub_title %}Main Dashboard{% endblock %}
+
+{% block admin_content %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
+        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Total Reservations</p>
+        <h3 class="text-4xl font-black text-white italic tracking-tighter">{{ total_reservations }}</h3>
+    </div>
+    
+    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
+        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Inventory Items</p>
+        <h3 class="text-4xl font-black text-white italic tracking-tighter">0</h3>
+    </div>
+
+    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
+        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Active Staff</p>
+        <h3 class="text-4xl font-black text-white italic tracking-tighter">1</h3>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-3xl">
+        <h4 class="text-xs font-black uppercase tracking-widest mb-6">Quick Actions</h4>
+        <div class="grid grid-cols-2 gap-4">
+            <button class="p-6 bg-white/5 rounded-2xl text-left hover:bg-red-600 transition-all group">
+                <span class="block text-[10px] font-black uppercase text-gray-400 group-hover:text-white/80">Staff</span>
+                <span class="block text-xs font-bold uppercase mt-1">Add New Staff</span>
+            </button>
+            <button class="p-6 bg-white/5 rounded-2xl text-left hover:bg-red-600 transition-all group">
+                <span class="block text-[10px] font-black uppercase text-gray-400 group-hover:text-white/80">Menu</span>
+                <span class="block text-xs font-bold uppercase mt-1">Manage Menu</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

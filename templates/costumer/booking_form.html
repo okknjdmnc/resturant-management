@@ -14,26 +14,28 @@
         </div>
     </div>
 
-    <form class="space-y-6">
+    <form action="{{ url_for('customer.submit_reservation') }}" method="POST" class="space-y-6">
+      <input type="hidden" name="tier" value="{{ tier }}">
+      <input type="hidden" name="table_number" value="{{ table_id }}">
       <div class="grid md:grid-cols-2 gap-6">
         <div class="space-y-2">
           <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Full Name</label>
-          <input type="text" placeholder="Gojo Satoru" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+          <input type="text" placeholder="Gojo Satoru" name="customer_name" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
         </div>
         <div class="space-y-2">
           <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Phone Number</label>
-          <input type="tel" placeholder="0912 345 6789" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+          <input type="tel" placeholder="0912 345 6789" name="phone_number" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
         </div>
       </div>
 
       <div class="grid md:grid-cols-2 gap-6">
         <div class="space-y-2">
           <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Date</label>
-          <input type="date" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+          <input type="date" name="res_date" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
         </div>
         <div class="space-y-2">
           <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Time Slot</label>
-          <select class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+          <select name="res_time" class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
             <option value="" disabled selected class="bg-[#1a1a1a] text-gray-500">Select a time</option>
             <option value="11:00 AM" class="bg-[#1a1a1a] text-white">11:00 AM</option>
             <option value="01:00 PM" class="bg-[#1a1a1a] text-white">01:00 PM</option>

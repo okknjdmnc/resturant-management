@@ -1,0 +1,38 @@
+{% extends "./base.html" %}
+{% block content %}
+<section class="min-h-screen flex items-center justify-center bg-[#0f0f0f] text-center px-6 relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-yellow-900/5 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="max-w-md relative z-10">
+        <div class="w-24 h-24 {% if is_event %}bg-red-600{% else %}bg-yellow-500{% endif %} rounded-full flex items-center justify-center mx-auto mb-10 shadow-2xl transition-all duration-700 scale-110">
+            <svg class="w-12 h-12 text-{% if is_event %}white{% else %}black{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+
+        {% if is_event %}
+            <h1 class="font-serif font-black text-4xl text-white mb-4 italic uppercase tracking-tighter">Inquiry Sent</h1>
+            <p class="text-gray-400 mb-8 leading-relaxed">
+                Thank you, <span class="text-white font-bold">{{ reservation.customer_name }}</span>. 
+                We've received your inquiry for a <span class="text-red-500 font-bold">{{ reservation.event_type }}</span> event. 
+                Our coordinator will contact you at <span class="text-white font-bold">{{ reservation.phone_number }}</span> within 24 hours to finalize the details.
+            </p>
+        {% else %}
+            <h1 class="font-serif font-black text-4xl text-white mb-4 italic uppercase tracking-tighter">Table Reserved</h1>
+            <p class="text-gray-400 mb-8 leading-relaxed">
+                See you, <span class="text-white font-bold">{{ reservation.customer_name }}</span>! 
+                Your table for <span class="text-yellow-500 font-bold">{{ reservation.reservation_date }}</span> at 
+                <span class="text-yellow-500 font-bold">{{ reservation.reservation_time }}</span> is now confirmed.
+            </p>
+        {% endif %}
+
+        <div class="space-y-4">
+            <a href="{{ url_for('customer.index') }}" class="inline-block w-full py-4 rounded-xl border border-white/10 text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all">
+                Return to Home
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -76,3 +76,58 @@ def reserve_details():
                            tier=tier, 
                            table_id=table_id,
                            tier_info=tier_info)
+
+@customer_bp.route("/reserve/submit", methods=["POST"])
+def submit_reservation():
+    data = {
+        "customer_name": request.form.get('customer_name'),
+        "phone_number": request.form.get('phone_number'),
+        "tier": request.form.get('tier'),
+        "table_number": int(request.form.get('table_number')),
+        "reservation_date": request.form.get('res_date'),
+        "reservation_time": request.form.get('res_time'),
+        "num_guests": 2 if int(request.form.get('table_number')) <= 15 else 4, 
+        "status": "confirmed"
+    }
+
+    try:
+        supabase = get_supabase()
+        # save ang data sa supabase table
+        res_response = supabase.table('reservations').insert(data).execute()
+        # update ang status para occupied / red
+        supabase.table('tables').update({"status": "occupied"}).eq("table_number", data['table_number']).execute()
+        
+        return render_template("costumer/success.html", reservation=data, is_event=False)
+
+    except Exception as e:
+        print(f"Error saving reservation {e}")
+        return "Error for saving reservation form. Try again", 500
+    
+@customer_bp.route('/reserve/event')
+def event_reservation():
+    return render_template("costumer/event_form.html")
+    
+@customer_bp.route('/reserve/event/submit', methods=['POST'])
+def submit_event():
+    data = {
+        "customer_name": request.form.get('customer_name'),
+        "phone_number": request.form.get('phone_number'),
+        "event_type": request.form.get('event_type'),
+        "event_date": request.form.get('event_date'),
+        "estimated_pax": int(request.form.get('estimated_pax')),
+        "special_requirements": request.form.get('requirements'),
+        "status": "pending"
+    }
+
+    try:
+        supabase = get_supabase()
+        supabase.table('event_reservations').insert(data).execute()
+        return render_template("costumer/success.html", reservation=data, is_event=True)
+    except Exception as e:
+        print(f"Event Error: {e}")
+        return "Error filing event request.", 500
+    
+    
+    
+
+    

@@ -1,0 +1,138 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Add New Staff{% endblock %}
+{% block header_title %}Staff Management{% endblock %}
+{% block sub_title %}Register New User{% endblock %}
+
+{% block admin_content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white/[0.02] border border-white/5 p-10 rounded-3xl backdrop-blur-xl shadow-2xl">
+        <div class="mb-8">
+            <h3 class="text-xl font-black uppercase italic tracking-tighter text-white">System Access <span class="text-red-600">Provisioning</span></h3>
+            <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Create credentials for restaurant personnel</p>
+        </div>
+
+        <form action="{{ url_for('admin.add_staff') }}" method="POST" class="space-y-6">
+            <div>
+                <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Personnel Email</label>
+                <input type="email" name="email" required placeholder="staff@gogihouse.com" 
+                       class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-red-600 transition-all">
+            </div>
+
+            <div class="relative">
+                <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Temporary Password</label>
+                <div class="relative">
+                    <input type="password" id="staff_password" name="password" required placeholder="••••••••" 
+                        class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-red-600 transition-all pr-12">
+                    
+                    <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
+                        <svg id="eye_icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="mt-3 flex items-center space-x-2">
+                    <div class="flex-1 h-1 rounded-full bg-white/5 overflow-hidden">
+                        <div id="strength_bar" class="h-full w-0 transition-all duration-500"></div>
+                    </div>
+                    <span id="strength_text" class="text-[9px] font-black uppercase tracking-widest text-gray-600 w-16 text-right">None</span>
+                </div>
+                
+                <ul class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                    <li id="req_char" class="text-[8px] uppercase font-bold text-gray-600 flex items-center space-x-1">
+                        <span>• 8+ Characters</span>
+                    </li>
+                    <li id="req_upper" class="text-[8px] uppercase font-bold text-gray-600 flex items-center space-x-1">
+                        <span>• Uppercase (A-Z)</span>
+                    </li>
+                    <li id="req_lower" class="text-[8px] uppercase font-bold text-gray-600 flex items-center space-x-1">
+                        <span>• Lowercase (a-z)</span>
+                    </li>
+                    <li id="req_num" class="text-[8px] uppercase font-bold text-gray-600 flex items-center space-x-1">
+                        <span>• Number</span>
+                    </li>
+                    <li id="req_special" class="text-[8px] uppercase font-bold text-gray-600 flex items-center space-x-1">
+                        <span>• Special Symbol</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Access Level / Role</label>
+                <select name="role" required 
+                        class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-red-600 transition-all appearance-none cursor-pointer">
+                    <option value="waiter" class="bg-[#0a0a0a]">Waiter (POS Access)</option>
+                    <option value="kitchen" class="bg-[#0a0a0a]">Kitchen (KOT Access)</option>
+                    <option value="cashier" class="bg-[#0a0a0a]">Cashier (Billing Access)</option>
+                    <option value="front_desk" class="bg-[#0a0a0a]">Front Desk (Front Desk)</option>
+                    <option value="super_admin" class="bg-[#0a0a0a]">Co-Admin (Full Access)</option>
+                </select>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" 
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-widest text-xs py-5 rounded-2xl shadow-lg shadow-red-600/20 transition-all active:scale-95">
+                    Confirm & Create Account
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-12">
+            <div class="bg-white/[0.02] border border-white/5 rounded-3xl overflow-hidden backdrop-blur-md">
+                <div class="p-6 border-b border-white/5">
+                    <h4 class="text-xs font-black uppercase tracking-widest text-white">Personnel Directory</h4>
+                    <p class="text-[9px] text-gray-500 uppercase mt-1">List of all active accounts with system access</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white/[0.01]">
+                                <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black">Staff Email</th>
+                                <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black">Access Level</th>
+                                <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black">Status</th>
+                                <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/[0.03]">
+                            {% for member in staff_list %}
+                            <tr class="hover:bg-white/[0.02] transition-colors group">
+                                <td class="px-8 py-4">
+                                    <span class="text-xs font-bold text-white">{{ member.full_name }}</span>
+                                </td>
+                                <td class="px-8 py-4">
+                                    <span class="px-3 py-1 rounded-lg text-[9px] font-black tracking-tighter uppercase 
+                                        {% if member.role == 'super_admin' %}
+                                            bg-red-600/10 text-red-500 border border-red-600/20
+                                        {% else %}
+                                            bg-blue-600/10 text-blue-500 border border-blue-600/20
+                                        {% endif %}">
+                                        {{ member.role.replace('_', ' ') }}
+                                    </span>
+                                </td>
+                                <td class="px-8 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase">Active</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-4">
+                                    <button class="text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-red-500 transition-colors">
+                                        Revoke Access
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block js %}
+    <script src="{{ url_for('static', filename='js/password_check.js') }}"></script>
+{% endblock %}
+{% endblock %}
