@@ -1,0 +1,103 @@
+{% extends "mysite/base.html" %}
+
+{% block title %}Inventory - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-red-950 mb-8">Inventory Management</h1>
+
+        <!-- Search & Filter -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <form method="get" class="space-y-4">
+                <div class="grid md:grid-cols-3 gap-4 items-end">
+                    <input type="text" name="search" placeholder="Search inventory items..." value="{{ request.GET.search }}" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-950">
+                    
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="low_stock" {% if request.GET.low_stock %}checked{% endif %} class="w-4 h-4 accent-red-950 rounded">
+                        <span class="text-gray-700 font-semibold">Low Stock Only</span>
+                    </label>
+
+                    <button type="submit" class="px-6 py-2 bg-red-950 text-white rounded-lg hover:bg-red-900 transition">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid md:grid-cols-1 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                <p class="text-gray-600 text-sm font-semibold">Low Stock Items</p>
+                <p class="text-4xl font-bold text-gray-900 mt-2">{{ low_stock_items }}</p>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        {% if inventory_items %}
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100 border-b border-gray-300">
+                        <tr>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Item Name</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Quantity</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Unit</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Reorder Level</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Cost/Unit</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Supplier</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in inventory_items %}
+                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition {% if item.quantity <= item.reorder_level %}bg-yellow-50{% endif %}">
+                            <td class="px-6 py-4 font-semibold text-gray-900">{{ item.name }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ item.quantity|floatformat:2 }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ item.get_unit_display }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ item.reorder_level|floatformat:2 }}</td>
+                            <td class="px-6 py-4 text-gray-900 font-semibold">${{ item.cost_per_unit|floatformat:2 }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ item.supplier|default:"—" }}</td>
+                            <td class="px-6 py-4">
+                                <a href="{% url 'inventory_detail' item.id %}" class="inline-block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="mt-8 flex justify-center gap-2">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">First</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="px-4 py-2 bg-red-950 text-white rounded-lg font-bold">{{ num }}</span>
+                {% else %}
+                    <a href="?page={{ num }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">Last</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="bg-white rounded-lg shadow p-8 text-center">
+            <p class="text-gray-600 text-lg">No inventory items found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "mysite/base.html" %}
+
+{% block title %}Payments - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-red-950 mb-8">Payments</h1>
+
+        <!-- Filter -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <form method="get" class="space-y-4">
+                <div class="grid md:grid-cols-3 gap-4">
+                    <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-950">
+                        <option value="">All Status</option>
+                        {% for status, label in payment_statuses %}
+                        <option value="{{ status }}" {% if request.GET.status == status %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="method" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-950">
+                        <option value="">All Methods</option>
+                        {% for method, label in payment_methods %}
+                        <option value="{{ method }}" {% if request.GET.method == method %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="px-6 py-2 bg-red-950 text-white rounded-lg hover:bg-red-900 transition">
+                        Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Payments Table -->
+        {% if payments %}
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100 border-b border-gray-300">
+                        <tr>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Order #</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Amount</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Method</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Status</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Transaction ID</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Paid Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 font-semibold text-gray-900">#{{ payment.order.order_number }}</td>
+                            <td class="px-6 py-4 font-semibold text-gray-900">${{ payment.amount|floatformat:2 }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ payment.get_method_display }}</td>
+                            <td class="px-6 py-4">
+                                {% if payment.status == 'pending' %}
+                                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold">Pending</span>
+                                {% elif payment.status == 'completed' %}
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">Completed</span>
+                                {% elif payment.status == 'failed' %}
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold">Failed</span>
+                                {% elif payment.status == 'refunded' %}
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">Refunded</span>
+                                {% else %}
+                                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-semibold">{{ payment.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-gray-700 text-sm">{{ payment.transaction_id|default:"—" }}</td>
+                            <td class="px-6 py-4 text-gray-600 text-sm">{{ payment.paid_at|date:"M d, g:i A"|default:"—" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="mt-8 flex justify-center gap-2">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">First</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="px-4 py-2 bg-red-950 text-white rounded-lg font-bold">{{ num }}</span>
+                {% else %}
+                    <a href="?page={{ num }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">Last</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="bg-white rounded-lg shadow p-8 text-center">
+            <p class="text-gray-600 text-lg">No payments found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
