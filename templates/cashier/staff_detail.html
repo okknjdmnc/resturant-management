@@ -1,0 +1,78 @@
+{% extends "mysite/base.html" %}
+
+{% block title %}{{ staff.first_name }} {{ staff.last_name }} - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-red-950">{{ staff.first_name }} {{ staff.last_name }}</h1>
+            <a href="{% url 'staff_list' %}" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                Back to Staff
+            </a>
+        </div>
+
+        <!-- Details Card -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h2 class="text-xl font-bold text-red-950 mb-6">Personal Information</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Email</p>
+                            <p class="text-gray-900">{{ staff.email }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Phone</p>
+                            <p class="text-gray-900">{{ staff.phone_number }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Address</p>
+                            <p class="text-gray-900">{{ staff.address|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-red-950 mb-6">Employment Information</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Position</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ staff.get_position_display }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Salary</p>
+                            <p class="text-2xl font-bold text-red-950">${{ staff.salary|floatformat:2 }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Status</p>
+                            <div class="mt-2">
+                                {% if staff.is_active %}
+                                <span class="px-4 py-2 bg-green-100 text-green-700 rounded-full font-semibold">Active</span>
+                                {% else %}
+                                <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full font-semibold">Inactive</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-8">
+                <h2 class="text-xl font-bold text-red-950 mb-4">Dates</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm text-gray-600 font-semibold">Hire Date</p>
+                        <p class="text-gray-900">{{ staff.hire_date|date:"M d, Y" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 font-semibold">Joined System</p>
+                        <p class="text-gray-900">{{ staff.created_at|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

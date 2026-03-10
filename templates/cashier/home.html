@@ -1,0 +1,96 @@
+{% extends "mysite/base.html" %}
+
+{% block title %}Home - Premium Restaurant{% endblock %}
+
+{% block content %}
+<div class="py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Hero Section -->
+        <div class="bg-red-950 text-white rounded-lg overflow-hidden shadow-2xl mb-12">
+            <div class="px-8 py-16">
+                <h2 class="text-5xl font-bold mb-4">Welcome to Premium Restaurant</h2>
+                <p class="text-xl mb-8 text-gray-200">Experience culinary excellence with fine dining in an elegant atmosphere</p>
+                <div class="flex gap-4">
+                    <a href="{% url 'inquiry' %}" class="bg-white text-red-950 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition">Make an Inquiry</a>
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'login' %}" class="bg-yellow-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-yellow-600 transition">Staff Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white rounded-lg shadow-md p-8">
+                <h3 class="text-3xl font-bold text-red-950 mb-4">Our Story</h3>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Premium Restaurant has been serving the finest cuisine for over two decades. Our commitment to excellence, 
+                    quality ingredients, and exceptional service has made us one of the most prestigious dining destinations in the region.
+                </p>
+                <p class="text-gray-700 leading-relaxed">
+                    Each dish is carefully crafted by our award-winning chefs, who combine traditional techniques with modern innovation 
+                    to create unforgettable culinary experiences for our valued guests.
+                </p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-8">
+                <h3 class="text-3xl font-bold text-red-950 mb-4">Why Choose Us?</h3>
+                <ul class="space-y-4">
+                    <li class="flex items-start">
+                        <span class="text-red-950 text-2xl mr-3">✓</span>
+                        <span class="text-gray-700"><strong>Expert Chefs:</strong> Award-winning culinary experts</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-red-950 text-2xl mr-3">✓</span>
+                        <span class="text-gray-700"><strong>Premium Quality:</strong> Finest ingredients sourced globally</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-red-950 text-2xl mr-3">✓</span>
+                        <span class="text-gray-700"><strong>Elegant Ambiance:</strong> Sophisticated dining environment</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-red-950 text-2xl mr-3">✓</span>
+                        <span class="text-gray-700"><strong>Exceptional Service:</strong> Attentive and professional staff</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-red-950 text-2xl mr-3">✓</span>
+                        <span class="text-gray-700"><strong>Diverse Menu:</strong> International and local cuisine</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Services Section -->
+        <div class="bg-white rounded-lg shadow-md p-8 mb-12">
+            <h3 class="text-3xl font-bold text-red-950 mb-8 text-center">Our Services</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center p-6 hover:shadow-lg transition rounded-lg">
+                    <div class="text-4xl mb-4">🛋️</div>
+                    <h4 class="text-xl font-bold text-red-950 mb-2">Fine Dining</h4>
+                    <p class="text-gray-600">Elegant and sophisticated dining experience with world-class service</p>
+                </div>
+                <div class="text-center p-6 hover:shadow-lg transition rounded-lg">
+                    <div class="text-4xl mb-4">📅</div>
+                    <h4 class="text-xl font-bold text-red-950 mb-2">Private Events</h4>
+                    <p class="text-gray-600">Perfect venue for corporate functions, celebrations, and special occasions</p>
+                </div>
+                <div class="text-center p-6 hover:shadow-lg transition rounded-lg">
+                    <div class="text-4xl mb-4">🍷</div>
+                    <h4 class="text-xl font-bold text-red-950 mb-2">Wine Pairings</h4>
+                    <p class="text-gray-600">Curated wine selection to complement our culinary creations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="bg-gray-100 rounded-lg p-8 text-center">
+            <h3 class="text-3xl font-bold text-red-950 mb-4">Get in Touch</h3>
+            <p class="text-gray-700 mb-4">Have questions or want to make a reservation?</p>
+            <p class="text-gray-700 mb-2"><strong>📞 Phone:</strong> (555) 123-4567</p>
+            <p class="text-gray-700 mb-2"><strong>📧 Email:</strong> info@premiumrestaurant.com</p>
+            <p class="text-gray-700 mb-6"><strong>📍 Location:</strong> 123 Gourmet Street, Fine Dining City</p>
+            <a href="{% url 'inquiry' %}" class="bg-red-950 text-white px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition inline-block">Send us a Message</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

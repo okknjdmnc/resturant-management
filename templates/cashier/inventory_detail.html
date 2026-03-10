@@ -1,0 +1,81 @@
+{% extends "mysite/base.html" %}
+
+{% block title %}{{ item.name }} - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-red-950">{{ item.name }}</h1>
+            <a href="{% url 'inventory_list' %}" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                Back to Inventory
+            </a>
+        </div>
+
+        <!-- Details Card -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h2 class="text-xl font-bold text-red-950 mb-6">Item Information</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Description</p>
+                            <p class="text-gray-900">{{ item.description|default:"N/A" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Supplier</p>
+                            <p class="text-gray-900">{{ item.supplier|default:"N/A" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Cost Per Unit</p>
+                            <p class="text-2xl font-bold text-red-950">${{ item.cost_per_unit|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-red-950 mb-6">Stock Information</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Current Quantity</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ item.quantity|floatformat:2 }} <span class="text-sm font-normal">{{ item.get_unit_display }}</span></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Reorder Level</p>
+                            <p class="text-gray-900">{{ item.reorder_level|floatformat:2 }} {{ item.get_unit_display }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 font-semibold">Status</p>
+                            <div class="mt-2">
+                                {% if item.quantity <= item.reorder_level %}
+                                <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full font-semibold">LOW STOCK</span>
+                                {% else %}
+                                <span class="px-4 py-2 bg-green-100 text-green-700 rounded-full font-semibold">In Stock</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-8">
+                <h2 class="text-xl font-bold text-red-950 mb-4">Financial Information</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <p class="text-sm text-gray-600 font-semibold">Total Inventory Value</p>
+                        <p class="text-3xl font-bold text-red-950 mt-2">${{ total_value|floatformat:2 }}</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <p class="text-sm text-gray-600 font-semibold mb-4">Metadata</p>
+                        <div class="text-sm text-gray-700 space-y-2">
+                            <p><strong>Created:</strong> {{ item.created_at|date:"M d, Y" }}</p>
+                            <p><strong>Last Updated:</strong> {{ item.last_updated|date:"M d, Y g:i A" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

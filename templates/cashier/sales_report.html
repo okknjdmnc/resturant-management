@@ -1,0 +1,82 @@
+{% extends "mysite/base.html" %}
+
+{% block title %}Sales Report - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-red-950 mb-8">Sales Report</h1>
+
+        <!-- Filter -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <form method="get" class="space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <select name="period" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-950">
+                        <option value="today" {% if period == 'today' %}selected{% endif %}>Today</option>
+                        <option value="week" {% if period == 'week' %}selected{% endif %}>Last 7 Days</option>
+                        <option value="month" {% if period == 'month' %}selected{% endif %}>Last 30 Days</option>
+                        <option value="year" {% if period == 'year' %}selected{% endif %}>Last Year</option>
+                    </select>
+
+                    <button type="submit" class="px-6 py-2 bg-red-950 text-white rounded-lg hover:bg-red-900 transition">
+                        Generate Report
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                <p class="text-gray-600 text-sm font-semibold">Total Revenue</p>
+                <p class="text-4xl font-bold text-gray-900 mt-2">${{ total_revenue|floatformat:2 }}</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                <p class="text-gray-600 text-sm font-semibold">Total Orders</p>
+                <p class="text-4xl font-bold text-gray-900 mt-2">{{ total_orders }}</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+                <p class="text-gray-600 text-sm font-semibold">Average Order Value</p>
+                <p class="text-4xl font-bold text-gray-900 mt-2">${{ avg_order_value|floatformat:2 }}</p>
+            </div>
+        </div>
+
+        <!-- Top Selling Items -->
+        {% if top_items %}
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="bg-gray-100 px-8 py-4 border-b border-gray-300">
+                <h2 class="text-lg font-bold text-red-950">Top Selling Items</h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100 border-b border-gray-300">
+                        <tr>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Item</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Quantity Sold</th>
+                            <th class="px-6 py-4 text-left font-bold text-gray-900">Total Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in top_items %}
+                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 font-semibold text-gray-900">{{ item.menu_item__name }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ item.total_quantity }}</td>
+                            <td class="px-6 py-4 font-semibold text-gray-900">${{ item.total_revenue|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-white rounded-lg shadow p-8 text-center">
+            <p class="text-gray-600 text-lg">No sales data available for this period.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
