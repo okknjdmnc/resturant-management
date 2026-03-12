@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Intelligence | RestaurantOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-maroon { background-color: #800000; }
+        .text-maroon { color: #800000; }
+        .border-maroon { border-color: #800000; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen text-gray-900">
+
+    <main class="max-w-7xl mx-auto py-12 px-6">
+        
+        <header class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+            <div>
+                <h1 class="text-4xl font-black text-maroon tracking-tighter uppercase leading-none">Sales Intelligence</h1>
+                <p class="text-sm text-gray-400 font-medium mt-2 italic">Performance Metrics • Thu, Mar 12, 2026</p>
+            </div>
+            <div class="flex gap-3">
+                <button class="px-6 py-3 bg-white border-2 border-maroon text-maroon font-black rounded-2xl text-xs uppercase hover:bg-red-50 transition">Weekly Comparison</button>
+                <button class="px-8 py-3 bg-maroon text-white font-black rounded-2xl shadow-xl hover:bg-red-900 transition uppercase text-xs tracking-widest">
+                    Export to CSV/XLS
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Gross Revenue</p>
+                <p class="text-3xl font-black text-gray-900">$12,480.00</p>
+                <p class="text-[10px] font-bold text-green-600 mt-2">↑ 14% vs Last Thu</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Average Check</p>
+                <p class="text-3xl font-black text-gray-900">$42.50</p>
+                <p class="text-[10px] font-bold text-gray-400 mt-2">Target: $45.00</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Covers (Guests)</p>
+                <p class="text-3xl font-black text-gray-900">294</p>
+                <p class="text-[10px] font-bold text-maroon mt-2">Peak: 7:00 PM</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm border-l-4 border-l-maroon">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Labor Cost %</p>
+                <p class="text-3xl font-black text-gray-900">22.4%</p>
+                <p class="text-[10px] font-bold text-green-600 mt-2">Healthy Range</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+                <h3 class="text-xs font-black uppercase tracking-widest mb-8 border-b border-gray-50 pb-4">Category Mix</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between text-[10px] font-black uppercase mb-2">
+                            <span>Buffet Adult</span>
+                            <span class="text-gray-400">$8,240 (66%)</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                            <div class="bg-maroon h-full" style="width: 66%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[10px] font-black uppercase mb-2">
+                            <span>Beverages</span>
+                            <span class="text-gray-400">$2,496 (20%)</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                            <div class="bg-gray-800 h-full" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[10px] font-black uppercase mb-2">
+                            <span>Buffet Kids</span>
+                            <span class="text-gray-400">$1,744 (14%)</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                            <div class="bg-gray-400 h-full" style="width: 14%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+                <h3 class="text-xs font-black uppercase tracking-widest mb-6 border-b border-gray-50 pb-4 italic">Star Performers</h3>
+                <ul class="space-y-4">
+                    <li class="flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-black text-gray-900 uppercase">Premium Wagyu</p>
+                            <p class="text-[9px] text-gray-400 uppercase">84 Units Sold</p>
+                        </div>
+                        <span class="text-xs font-bold text-green-600">+$2,100</span>
+                    </li>
+                    <li class="flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-black text-gray-900 uppercase">Craft Draft Beer</p>
+                            <p class="text-[9px] text-gray-400 uppercase">52 Units Sold</p>
+                        </div>
+                        <span class="text-xs font-bold text-green-600">+$780</span>
+                    </li>
+                    <li class="flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-black text-gray-900 uppercase">House Signature Tea</p>
+                            <p class="text-[9px] text-gray-400 uppercase">48 Units Sold</p>
+                        </div>
+                        <span class="text-xs font-bold text-green-600">+$240</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

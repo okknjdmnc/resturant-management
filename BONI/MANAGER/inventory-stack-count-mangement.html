@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Control | RestaurantOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-maroon { background-color: #800000; }
+        .text-maroon { color: #800000; }
+        .border-maroon { border-color: #800000; }
+        .hover-maroon:hover { background-color: #600000; }
+        input[type=number]::-webkit-inner-spin-button { opacity: 1; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen text-gray-900">
+
+    <main class="max-w-7xl mx-auto py-12 px-6">
+        
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-10 gap-6">
+            <div>
+                <h1 class="text-4xl font-black text-maroon tracking-tighter uppercase leading-none">Stock Management</h1>
+                <p class="text-sm text-gray-400 font-medium mt-2 italic">Global Inventory • Warehouse & Kitchen Prime</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                <div class="relative flex-1 md:w-80">
+                    <input type="text" placeholder="Search SKU or Category..." class="w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:ring-1 focus:ring-maroon outline-none shadow-sm">
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2">🔍</span>
+                </div>
+                <button class="bg-white border-2 border-maroon text-maroon px-6 py-3 rounded-2xl font-black text-xs uppercase hover:bg-red-50 transition">Add New SKU</button>
+                <button class="bg-maroon text-white px-8 py-3 rounded-2xl font-black text-xs uppercase shadow-xl hover:bg-red-900 transition flex items-center gap-2">
+                    <span>➕</span> Create Purchase Order
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Out of Stock</p>
+                <div class="flex items-end justify-between">
+                    <p class="text-4xl font-black text-red-600">03</p>
+                    <span class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-1 rounded uppercase">Critical</span>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Pending Deliveries</p>
+                <p class="text-4xl font-black text-gray-900">08</p>
+                <p class="text-[10px] text-gray-400 font-bold mt-1 uppercase italic">Due: Today</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Monthly Stock Value</p>
+                <p class="text-4xl font-black text-maroon italic">$24,150</p>
+                <p class="text-[10px] text-green-600 font-bold mt-1 uppercase italic">↓ 4% Waste Reduction</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-8 py-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                <h3 class="font-black text-maroon text-sm uppercase tracking-widest">Master Stock Ledger</h3>
+                <div class="flex gap-2">
+                    <span class="px-3 py-1 bg-white border border-gray-200 rounded-lg text-[10px] font-bold uppercase cursor-pointer">All Categories</span>
+                    <span class="px-3 py-1 bg-white border border-gray-200 rounded-lg text-[10px] font-bold uppercase cursor-pointer text-maroon">Proteins</span>
+                </div>
+            </div>
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] border-b border-gray-50">
+                        <th class="px-8 py-5">Item & Supplier</th>
+                        <th class="px-8 py-5">Current On-Hand</th>
+                        <th class="px-8 py-5">Min. Threshold</th>
+                        <th class="px-8 py-5">Status</th>
+                        <th class="px-8 py-5 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 text-sm">
+                    <tr class="hover:bg-gray-50/50 transition-all">
+                        <td class="px-8 py-6">
+                            <div class="flex flex-col">
+                                <span class="font-black text-gray-900 uppercase tracking-tighter">Australian Ribeye (Chilled)</span>
+                                <span class="text-[10px] text-gray-400 font-bold uppercase italic">Vendor: Prime Cuts Ltd.</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 font-mono font-bold text-red-600">8.20 KG</td>
+                        <td class="px-8 py-6 font-mono text-gray-400">15.00 KG</td>
+                        <td class="px-8 py-6">
+                            <span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full uppercase tracking-tighter">Low Stock</span>
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <button class="text-[10px] font-black text-maroon underline uppercase tracking-widest hover:text-red-900">Order More</button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-gray-50/50 transition-all">
+                        <td class="px-8 py-6">
+                            <div class="flex flex-col">
+                                <span class="font-black text-gray-900 uppercase tracking-tighter">Jasmine Rice (25kg Bag)</span>
+                                <span class="text-[10px] text-gray-400 font-bold uppercase italic">Vendor: Global Grains</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 font-mono font-bold text-gray-700">12.00 Units</td>
+                        <td class="px-8 py-6 font-mono text-gray-400">4.00 Units</td>
+                        <td class="px-8 py-6">
+                            <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase tracking-tighter">Optimal</span>
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <button class="text-[10px] font-black text-gray-400 underline uppercase tracking-widest hover:text-maroon">View History</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-maroon rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-sm font-black uppercase tracking-[0.2em] mb-4">Stock Value Optimization</h3>
+                    <p class="text-xs opacity-70 leading-relaxed mb-6">
+                        Your current Ribeye stock will be depleted in <strong>14 hours</strong> based on Lunch session velocity. An automatic Purchase Order (PO) has been drafted for Prime Cuts Ltd.
+                    </p>
+                    <button class="bg-white text-maroon px-6 py-3 rounded-xl font-black text-xs uppercase shadow-lg">Review Auto-PO</button>
+                </div>
+                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-red-900 rounded-full opacity-50"></div>
+            </div>
+        </footer>
+
+    </main>
+
+</body>
+</html>
