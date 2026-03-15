@@ -1,0 +1,555 @@
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Stock Control | RestaurantOS</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+                .bg-maroon { background-color: #800000; }
+                .text-maroon { color: #800000; }
+                .border-maroon { border-color: #800000; }
+                .hover-maroon:hover { background-color: #600000; }
+                input[type=number]::-webkit-inner-spin-button { opacity: 1; }
+            </style>
+        </head>
+        <body class="bg-gray-50 font-sans min-h-screen text-gray-900">
+
+            <main class="max-w-7xl mx-auto py-12 px-6">
+                
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-10 gap-6">
+                    <div>
+                        <h1 class="text-4xl font-black text-maroon tracking-tighter uppercase leading-none">Stock Management</h1>
+                        <p class="text-sm text-gray-400 font-medium mt-2 italic">Global Inventory • Warehouse & Kitchen Prime</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                        <div class="relative flex-1 md:w-80">
+                            <input type="text" placeholder="Search SKU or Category..." class="w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:ring-1 focus:ring-maroon outline-none shadow-sm">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2">🔍</span>
+                        </div>
+                        <button class="bg-white border-2 border-maroon text-maroon px-6 py-3 rounded-2xl font-black text-xs uppercase hover:bg-red-50 transition">Add New SKU</button>
+                        <button class="bg-maroon text-white px-8 py-3 rounded-2xl font-black text-xs uppercase shadow-xl hover:bg-red-900 transition flex items-center gap-2">
+                            <span>➕</span> Create Purchase Order
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Out of Stock</p>
+                        <div class="flex items-end justify-between">
+                            <p class="text-4xl font-black text-red-600">03</p>
+                            <span class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-1 rounded uppercase">Critical</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Pending Deliveries</p>
+                        <p class="text-4xl font-black text-gray-900">08</p>
+                        <p class="text-[10px] text-gray-400 font-bold mt-1 uppercase italic">Due: Today</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Monthly Stock Value</p>
+                        <p class="text-4xl font-black text-maroon italic">$24,150</p>
+                        <p class="text-[10px] text-green-600 font-bold mt-1 uppercase italic">↓ 4% Waste Reduction</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-8 py-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                        <h3 class="font-black text-maroon text-sm uppercase tracking-widest">Master Stock Ledger</h3>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 bg-white border border-gray-200 rounded-lg text-[10px] font-bold uppercase cursor-pointer">All Categories</span>
+                            <span class="px-3 py-1 bg-white border border-gray-200 rounded-lg text-[10px] font-bold uppercase cursor-pointer text-maroon">Proteins</span>
+                        </div>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] border-b border-gray-50">
+                                <th class="px-8 py-5">Item & Supplier</th>
+                                <th class="px-8 py-5">Current On-Hand</th>
+                                <th class="px-8 py-5">Min. Threshold</th>
+                                <th class="px-8 py-5">Status</th>
+                                <th class="px-8 py-5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50 text-sm">
+
+                            <!-- NORMAL CATEGORY -->
+                            <tr class="bg-gray-50/70">
+                                <td colspan="5" class="px-8 py-4 font-black uppercase text-maroon tracking-widest text-[10px]">
+                                    🟢 Normal Menu Items
+                                </td>
+                            </tr>
+
+                            <!-- 1. Samgyupsal -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Samgyupsal (Pork Belly)</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Normal</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">22.00 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">15.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 2. Chadolbaegi -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Chadolbaegi (Beef Brisket)</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Normal</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-red-600">3.00 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">10.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full uppercase">Low Stock</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 3. Spicy Pork Bulgogi -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Spicy Pork Bulgogi</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Normal</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">18.00 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">12.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 4. Steamed Rice -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Steamed Rice</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Normal</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">50.00 Units</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">10.00 Units</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 5. Kimchi Jjigae -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Kimchi Jjigae</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Normal</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-red-600">1.00 Pot</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">5.00 Pot</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full uppercase">Low Stock</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 6. Egg Gyeran-jjim -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Egg Gyeran-jjim</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Normal</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">9.00 Bowls</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">4.00 Bowls</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <tr class="category-pagination" data-category="Normal">
+                                <td colspan="5" class="py-4 text-center">
+                                    <button class="loadMoreBtn bg-maroon text-white text-xs font-black px-6 py-2 rounded-lg uppercase tracking-widest hover:bg-red-900 transition"
+                                        data-category="Normal">Load More (Normal)</button>
+                                </td>
+                            </tr>
+
+                            <!-- HIGH END CATEGORY -->
+                            <tr class="bg-gray-50/70">
+                                <td colspan="5" class="px-8 py-4 font-black uppercase text-maroon tracking-widest text-[10px]">
+                                    🟡 High-End Menu Items
+                                </td>
+                            </tr>
+
+                            <!-- 7. Wagyu Beef Slices -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Wagyu Beef Slices</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: High-End</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-red-600">2.00 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">10.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full uppercase">Low Stock</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 8. Galbi -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Galbi (Short Rib)</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: High-End</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">14.00 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">12.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 9. Garlic Shrimp -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Garlic Shrimp</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: High-End</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">9.00 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">6.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 10. Duck Breast -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Duck Breast Slices</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: High-End</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">7.00 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">5.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 11. Lobster Tail -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Lobster Tail</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: High-End</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-red-600">1.00 Tail</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">4.00 Tail</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full uppercase">Low Stock</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 12. Truffle Fried Rice -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Truffle Fried Rice</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: High-End</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">20.00 Bowls</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">10.00 Bowls</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <tr class="category-pagination" data-category="High-End">
+                                <td colspan="5" class="py-4 text-center">
+                                    <button class="loadMoreBtn bg-maroon text-white text-xs font-black px-6 py-2 rounded-lg uppercase tracking-widest hover:bg-red-900 transition"
+                                        data-category="High-End">Load More (High-End)</button>
+                                </td>
+                            </tr>
+
+                            <!-- HARD MODE CATEGORY -->
+                            <tr class="bg-gray-50/70">
+                                <td colspan="5" class="px-8 py-4 font-black uppercase text-maroon tracking-widest text-[10px]">
+                                    🔴 Hard Mode Menu Items
+                                </td>
+                            </tr>
+
+                            <!-- 13. Ghost Pepper Bulgogi -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Ghost Pepper Bulgogi</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Hard-Mode</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-red-600">0.50 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">8.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full uppercase">Critical</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 14. Fire Squid -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Fire Squid (Ojingeo)</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Hard-Mode</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-red-600">1.00 Whole</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">6.00 Whole</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full uppercase">Low Stock</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 15. Blood Sausage -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Blood Sausage (Soondae)</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Hard-Mode</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">5.00 Rolls</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">4.00 Rolls</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 16. Habanero Pork Ribs -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Habanero Pork Ribs</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Hard-Mode</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">7.00 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">5.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 17. Triple Spice Tteokbokki -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Triple Spice Tteokbokki</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Hard-Mode</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-red-600">2.00 Packs</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">10.00 Packs</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full uppercase">Low Stock</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <!-- 18. Volcano Bibimbap -->
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Volcano Bibimbap</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Category: Hard-Mode</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-green-700">15.00 Bowls</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">10.00 Bowls</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <tr class="category-pagination" data-category="Hard-Mode">
+                                <td colspan="5" class="py-4 text-center">
+                                    <button class="loadMoreBtn bg-maroon text-white text-xs font-black px-6 py-2 rounded-lg uppercase tracking-widest hover:bg-red-900 transition"
+                                        data-category="Hard-Mode">Load More (Hard Mode)</button>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                        <!-- <tbody class="divide-y divide-gray-50 text-sm">
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Australian Ribeye (Chilled)</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Vendor: Prime Cuts Ltd.</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-red-600">8.20 KG</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">15.00 KG</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full uppercase tracking-tighter">Low Stock</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-maroon underline uppercase tracking-widest hover:text-red-900">Order More</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-6">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-gray-900 uppercase tracking-tighter">Jasmine Rice (25kg Bag)</span>
+                                        <span class="text-[10px] text-gray-400 font-bold uppercase italic">Vendor: Global Grains</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 font-mono font-bold text-gray-700">12.00 Units</td>
+                                <td class="px-8 py-6 font-mono text-gray-400">4.00 Units</td>
+                                <td class="px-8 py-6">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase tracking-tighter">Optimal</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <button class="text-[10px] font-black text-gray-400 underline uppercase tracking-widest hover:text-maroon">View History</button>
+                                </td>
+                            </tr>
+                        </tbody> -->
+                    </table>
+                </div>
+
+                <footer class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-maroon rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
+                        <div class="relative z-10">
+                            <h3 class="text-sm font-black uppercase tracking-[0.2em] mb-4">Stock Value Optimization</h3>
+                            <p class="text-xs opacity-70 leading-relaxed mb-6">
+                                Your current Ribeye stock will be depleted in <strong>14 hours</strong> based on Lunch session velocity. An automatic Purchase Order (PO) has been drafted for Prime Cuts Ltd.
+                            </p>
+                            <button class="bg-white text-maroon px-6 py-3 rounded-xl font-black text-xs uppercase shadow-lg">Review Auto-PO</button>
+                        </div>
+                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-red-900 rounded-full opacity-50"></div>
+                    </div>
+                </footer>
+
+            </main>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const maxItems = 10;
+
+                    // Loop each pagination row
+                    document.querySelectorAll(".category-pagination").forEach(paginationRow => {
+                        const category = paginationRow.dataset.category; // Normal, High-End, Hard-Mode
+                        const rows = [];
+
+                        // STEP 1 — Find the header row for this category
+                        let foundHeader = false;
+
+                        document.querySelectorAll("tbody tr").forEach(row => {
+
+                            // Skip other category pagination rows
+                            if (row.classList.contains("category-pagination")) return;
+
+                            // Detect category header
+                            const headerCell = row.querySelector("td[colspan]");
+                            if (headerCell && headerCell.textContent.includes(category)) {
+                                foundHeader = true;
+                                return;
+                            }
+
+                            // Once header found, start collecting its items
+                            if (foundHeader) {
+                                const label = row.querySelector(".text-[10px].italic");
+
+                                // When next category header appears → stop collecting
+                                const nextHeader = row.querySelector("td[colspan]");
+                                if (nextHeader && !nextHeader.textContent.includes(category)) {
+                                    foundHeader = false;
+                                    return;
+                                }
+
+                                // Collect only rows belonging to this category
+                                if (label && label.textContent.includes(`Category: ${category}`)) {
+                                    rows.push(row);
+                                }
+                            }
+                        });
+
+                        // STEP 2 — Hide extra rows
+                        rows.forEach((row, index) => {
+                            if (index >= maxItems) row.style.display = "none";
+                        });
+
+                        // STEP 3 — Load More button
+                        paginationRow.querySelector(".loadMoreBtn").addEventListener("click", () => {
+                            rows.forEach(row => (row.style.display = "")); // Show all
+                            paginationRow.style.display = "none"; // Hide button
+                        });
+                    });
+                });
+            </script>
+            
+        </body>
+        </html>
