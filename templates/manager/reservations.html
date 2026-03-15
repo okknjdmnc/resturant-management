@@ -1,0 +1,109 @@
+{% extends "manager/manager_base.html" %}
+{% block manager_content %}
+<div class="min-h-screen bg-[#0f1113] text-gray-100 p-6">
+    
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-white">Reservation <span class="text-yellow-500">Overview</span></h1>
+        <p class="text-gray-400">Manage your Table Seating and Private Event bookings.</p>
+    </div>
+
+    <div class="flex space-x-4 mb-8">
+        <a href="{{ url_for('manager.manage_reservations', type='seating') }}" 
+           class="flex-1 max-w-[250px] p-4 rounded-xl border-2 transition-all {{ 'border-yellow-500 bg-yellow-500/10 text-white' if current_filter == 'seating' else 'border-gray-800 bg-[#1a1d21] text-gray-500 hover:border-gray-600' }}">
+            <div class="flex items-center space-x-3 text-sm font-bold uppercase tracking-widest">
+                <span>🪑 Table Seating</span>
+            </div>
+        </a>
+
+        <a href="{{ url_for('manager.manage_reservations', type='event') }}" 
+           class="flex-1 max-w-[250px] p-4 rounded-xl border-2 transition-all {{ 'border-red-500 bg-red-500/10 text-white' if current_filter == 'event' else 'border-gray-800 bg-[#1a1d21] text-gray-500 hover:border-gray-600' }}">
+            <div class="flex items-center space-x-3 text-sm font-bold uppercase tracking-widest">
+                <span>🎉 Private Events</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="bg-[#1a1d21] rounded-2xl border border-gray-800 overflow-hidden shadow-2xl">
+        <table class="w-full text-left">
+            <thead class="bg-[#24282d] border-b border-gray-800">
+                <tr>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Customer</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Details</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Schedule</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Payment</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Status</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for res in reservations %}
+                <tr class="hover:bg-white/[0.02]">
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-bold text-white">{{ res.customer_name }}</div>
+                        <div class="text-xs text-gray-500">{{ res.phone_number }}</div>
+                        <div class="mt-1 flex space-x-2">
+                            {% if res.id_url %}
+                            <a href="{{ res.id_url }}" target="_blank" class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30 hover:bg-blue-500 hover:text-white transition-all">VIEW ID</a>
+                            {% endif %}
+                            {% if res.receipt_url %}
+                            <a href="{{ res.receipt_url }}" target="_blank" class="text-[9px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/30 hover:bg-green-500 hover:text-white transition-all">VIEW RECEIPT</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                    
+                    <td class="px-6 py-4">
+                        {% if current_filter == 'seating' %}
+                            <span class="text-yellow-500 font-bold">Table {{ res.table_number }}</span>
+                            <div class="text-[10px] text-gray-500 uppercase">{{ res.tier }}</div>
+                        {% else %}
+                            <span class="text-red-500 font-bold">{{ res.event_type }}</span>
+                            <div class="text-[10px] text-gray-500 uppercase">{{ res.estimated_pax }} Pax</div>
+                        {% endif %}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-white font-medium">
+                            {{ res.reservation_date if current_filter == 'seating' else res.event_date }}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            {{ res.reservation_time if current_filter == 'seating' else 'Full Day' }}
+                        </div>
+                    </td>
+
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-white font-medium italic">{{ res.payment_method }}</div>
+                        <div class="text-sm text-white font-medium italic">{{ res.downpayment_amount }}</div>
+                        <div class="text-[10px] text-gray-500 uppercase">Paid on: {{ res.created_at[:10] }}</div>
+                    </td>
+
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest 
+                            {{ 'bg-amber-500/10 text-amber-500 border border-amber-500/20' if res.status == 'pending' else 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' }}">
+                            {{ res.status }}
+                        </span>
+                    </td>
+
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end space-x-2">
+                            {% if res.status == 'pending' %}
+                                <a href="#" class="px-3 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-bold uppercase">Confirm</a>
+                            {% endif %}
+                            
+                            {% if current_filter == 'seating' and res.status == 'confirmed' %}
+                                <a href="#" class="px-3 py-1 bg-gray-500/10 text-gray-400 border border-gray-500/20 rounded hover:bg-white hover:text-black transition-all text-[10px] font-bold uppercase italic">Checkout</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-12 text-center text-gray-500 italic text-sm">
+                        No entries found in {{ 'Table Seating' if current_filter == 'seating' else 'Event Reservations' }}.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

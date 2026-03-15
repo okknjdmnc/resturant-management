@@ -1,0 +1,47 @@
+{% extends "manager/manager_base.html" %}
+{% block title %}Operations{% endblock %}
+
+{% block manager_content %}
+<header class="mb-10">
+    <h2 class="text-3xl font-black uppercase italic tracking-tighter">Operational <span class="text-cyan-500">Intelligence</span></h2>
+    <p class="text-[10px] text-gray-500 uppercase tracking-[0.4em] mt-1">Gojo House Management System v2.0</p>
+</header>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+            <svg class="w-16 h-16 text-cyan-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+        </div>
+        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Pending Reservations</p>
+        <h3 class="text-5xl font-black text-white italic tracking-tighter">{{ pending_reservations }}</h3>
+    </div>
+
+    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem]">
+        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Inventory Alert</p>
+        <h3 class="text-5xl font-black text-amber-500 italic tracking-tighter">{{ low_stock_count }}<span class="text-xs ml-2 text-gray-600">Low Stock</span></h3>
+    </div>
+
+    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem]">
+        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Active Staff</p>
+        <h3 class="text-5xl font-black text-white italic tracking-tighter">8</h3>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="bg-white/[0.02] border border-white/5 rounded-[2rem] p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h4 class="text-xs font-black uppercase tracking-widest">Incoming Guests</h4>
+            <button class="text-[9px] font-bold text-cyan-500 uppercase">View All</button>
+        </div>
+        <div class="space-y-4">
+            <div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl flex justify-between items-center">
+                <div>
+                    <p class="text-xs font-bold">Christian Dev</p>
+                    <p class="text-[9px] text-gray-500">5 Persons • 7:00 PM</p>
+                </div>
+                <span class="px-3 py-1 bg-cyan-500/10 text-cyan-500 rounded-lg text-[9px] font-black uppercase">Confirmed</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
