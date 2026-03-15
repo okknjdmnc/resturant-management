@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-maroon { background-color: #800000; }
+        .text-maroon { color: #800000; }
+        .border-maroon { border-color: #800000; }
+    </style>
+</head>
+<body class="bg-gray-100 h-screen flex flex-col font-sans">
+
+    <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center shadow-sm">
+        <h1 class="text-maroon font-black text-xl italic tracking-tighter">CASHIER <span class="text-gray-400">DESK</span></h1>
+        <div class="flex gap-4">
+            <span class="text-sm font-bold text-gray-500 uppercase">Shift: Morning</span>
+            <span class="text-sm font-bold text-maroon">Cashier: Sarah J.</span>
+        </div>
+    </header>
+
+    <main class="flex-1 flex p-6 gap-6 overflow-hidden">
+        
+        <section class="w-2/5 flex flex-col gap-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex-1">
+                <h2 class="text-xs font-bold text-gray-400 uppercase mb-4">Live Occupied Tables</h2>
+                <div class="grid grid-cols-4 gap-3">
+                    <button class="border-2 border-maroon bg-red-50 p-3 rounded-lg text-center">
+                        <span class="block text-maroon font-black">T-14</span>
+                        <span class="text-[10px] text-maroon opacity-70">6 Pax</span>
+                    </button>
+                    <button class="border border-gray-200 p-3 rounded-lg text-center opacity-50">
+                        <span class="block font-bold">T-15</span>
+                        <span class="text-[10px]">Empty</span>
+                    </button>
+                    </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-xs font-bold text-gray-400 uppercase mb-4">Summary of KOTs</h2>
+                <table class="w-full text-sm">
+                    <tr class="border-b border-gray-50 text-left">
+                        <th class="py-2 text-gray-400">Item</th>
+                        <th class="py-2 text-right text-gray-400">Qty</th>
+                        <th class="py-2 text-right text-gray-400">Total</th>
+                    </tr>
+                    <tr>
+                        <td class="py-2 font-medium">HighEnd Buffet (Adult)</td>
+                        <td class="py-2 text-right">4</td>
+                        <td class="py-2 text-right font-bold">$180.00</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 font-medium">HighEnd Buffet (Child)</td>
+                        <td class="py-2 text-right">2</td>
+                        <td class="py-2 text-right font-bold">$45.00</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="w-3/5 bg-white rounded-xl shadow-xl border border-gray-200 flex flex-col">
+            <div class="p-8 flex-1">
+                <div class="flex justify-between items-start mb-10">
+                    <div>
+                        <p class="text-gray-400 text-xs font-bold uppercase">Invoice Amount</p>
+                        <h3 class="text-6xl font-black text-maroon tracking-tighter">$225.00</h3>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-gray-400 text-xs font-bold uppercase">Taxes & Fees</p>
+                        <p class="text-lg font-bold text-gray-600">+$22.50 (10%)</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-400 uppercase mb-3">Quick Discounts</h4>
+                        <div class="flex gap-3">
+                            <button class="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">10% Staff</button>
+                            <button class="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">20% Senior</button>
+                            <button class="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">Manager Comp</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-400 uppercase mb-3">Payment Method</h4>
+                        <div class="grid grid-cols-3 gap-4">
+                            <button class="py-6 border-2 border-maroon rounded-xl flex flex-col items-center gap-2 bg-red-50">
+                                <span class="font-bold text-maroon">CASH</span>
+                            </button>
+                            <button class="py-6 border border-gray-200 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-50">
+                                <span class="font-bold">CREDIT CARD</span>
+                            </button>
+                            <button class="py-6 border border-gray-200 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-50">
+                                <span class="font-bold">DIGITAL PAY</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8 bg-gray-50 border-t border-gray-200 rounded-b-xl flex gap-4">
+                <button class="flex-1 py-5 bg-maroon text-white font-black rounded-xl shadow-lg hover:bg-red-900 transition text-lg tracking-widest">
+                    SETTLE & PRINT INVOICE
+                </button>
+                <button class="w-20 py-5 border border-gray-200 text-gray-400 rounded-xl hover:bg-white flex items-center justify-center">
+                    ⎙
+                </button>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

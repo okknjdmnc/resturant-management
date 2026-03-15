@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Command Center | RestaurantOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-maroon { background-color: #800000; }
+        .text-maroon { color: #800000; }
+        .border-maroon { border-color: #800000; }
+        .hover-maroon:hover { background-color: #600000; }
+        .accent-shadow { shadow: 0 10px 15px -3px rgba(128, 0, 0, 0.1), 0 4px 6px -2px rgba(128, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans h-screen flex overflow-hidden">
+
+    <aside class="w-20 bg-maroon flex flex-col items-center py-8 gap-10 shadow-2xl z-50">
+        <div class="text-white font-black italic text-xl">R<span class="text-red-300">OS</span></div>
+        <div class="flex flex-col gap-6">
+            <button class="w-12 h-12 bg-red-900 rounded-xl flex items-center justify-center text-white shadow-lg">📊</button>
+            <button class="w-12 h-12 hover:bg-red-900 rounded-xl flex items-center justify-center text-red-200 transition">🪑</button>
+            <button class="w-12 h-12 hover:bg-red-900 rounded-xl flex items-center justify-center text-red-200 transition">📦</button>
+            <button class="w-12 h-12 hover:bg-red-900 rounded-xl flex items-center justify-center text-red-200 transition">⚙️</button>
+        </div>
+        <div class="mt-auto">
+            <div class="w-10 h-10 rounded-full border-2 border-red-400 overflow-hidden">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=fff&color=800000" alt="Admin">
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        
+        <header class="h-16 bg-white border-b border-gray-200 px-8 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <h2 class="font-black text-maroon text-lg uppercase tracking-widest">Command Center</h2>
+                <span class="h-4 w-px bg-gray-200"></span>
+                <p class="text-xs font-bold text-gray-400">SESSION: <span class="text-green-600">LUNCH RUSH</span></p>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Current Revenue</p>
+                    <p class="text-lg font-black text-maroon">$12,450.80</p>
+                </div>
+                <button class="bg-maroon text-white px-4 py-2 rounded-lg text-xs font-bold hover-maroon transition shadow-md uppercase">End Session</button>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8 space-y-8">
+            
+            <section class="grid grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-2">Seated Pax</h3>
+                    <p class="text-4xl font-black text-gray-900">84 <span class="text-sm text-gray-400 font-medium">/ 120</span></p>
+                    <div class="w-full bg-gray-100 h-1.5 mt-4 rounded-full overflow-hidden">
+                        <div class="bg-maroon h-full w-[70%]"></div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-2">Pending KOTs</h3>
+                    <p class="text-4xl font-black text-amber-600">07</p>
+                    <p class="text-[10px] font-bold text-gray-400 mt-2">Avg. Prep Time: 12m</p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-2">HardMode Tiers</h3>
+                    <p class="text-4xl font-black text-red-600">12</p>
+                    <p class="text-[10px] font-bold text-gray-400 mt-2 uppercase">High-Margin Tables</p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-2">Labor Cost</h3>
+                    <p class="text-4xl font-black text-gray-900">14%</p>
+                    <p class="text-[10px] font-bold text-green-600 mt-2 uppercase">Within Budget</p>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-3 gap-8">
+                
+                <div class="col-span-2 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="font-black text-maroon text-sm uppercase tracking-widest">Live Floor Plan</h3>
+                        <div class="flex gap-4 text-[10px] font-bold uppercase">
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 bg-maroon rounded-full"></span> Occupied</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 bg-gray-200 rounded-full"></span> Available</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 bg-amber-400 rounded-full"></span> Needs Bill</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-5 gap-6">
+                        <div class="h-24 rounded-2xl border-2 border-maroon bg-red-50 flex flex-col items-center justify-center">
+                            <span class="text-xs font-black text-maroon">T-01</span>
+                            <span class="text-[10px] text-maroon/60">4 Pax</span>
+                        </div>
+                        <div class="h-24 rounded-2xl border-2 border-amber-400 bg-amber-50 flex flex-col items-center justify-center">
+                            <span class="text-xs font-black text-amber-600">T-02</span>
+                            <span class="text-[10px] text-amber-600/60 font-bold">SETTLE</span>
+                        </div>
+                        <div class="h-24 rounded-2xl border border-gray-200 flex items-center justify-center">
+                            <span class="text-xs font-bold text-gray-300">T-03</span>
+                        </div>
+                        <div class="h-24 rounded-2xl border-2 border-maroon bg-red-50 flex flex-col items-center justify-center">
+                            <span class="text-xs font-black text-maroon">T-04</span>
+                            <span class="text-[10px] text-maroon/60">8 Pax</span>
+                        </div>
+                        <div class="h-24 rounded-2xl border-2 border-maroon bg-red-50 flex flex-col items-center justify-center">
+                            <span class="text-xs font-black text-maroon">T-05</span>
+                            <span class="text-[10px] text-maroon/60">2 Pax</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col">
+                    <h3 class="font-black text-maroon text-sm uppercase tracking-widest mb-6">Approval Queue</h3>
+                    <div class="flex-1 space-y-4">
+                        <div class="p-4 bg-gray-50 rounded-2xl border-l-4 border-maroon">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] font-black text-maroon uppercase">Void Request</span>
+                                <span class="text-[10px] text-gray-400 font-mono">14:02</span>
+                            </div>
+                            <p class="text-xs font-bold text-gray-800">T-14: Void 2x HighEnd Buffet</p>
+                            <p class="text-[10px] text-gray-500 italic mt-1">Reason: Guest Complaint (Cold Food)</p>
+                            <div class="flex gap-2 mt-4">
+                                <button class="flex-1 bg-maroon text-white py-2 rounded-lg text-[10px] font-bold uppercase">Approve</button>
+                                <button class="flex-1 border border-gray-200 py-2 rounded-lg text-[10px] font-bold uppercase">Deny</button>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-2xl border-l-4 border-red-600">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] font-black text-red-600 uppercase">Stock Alert</span>
+                            </div>
+                            <p class="text-xs font-bold text-gray-800">Item "Salmon Sashimi" is LOW</p>
+                            <button class="w-full mt-4 bg-red-600 text-white py-2 rounded-lg text-[10px] font-bold uppercase">Mark Out (86)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="font-black text-maroon text-sm uppercase tracking-widest">Revenue Velocity (Hourly)</h3>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-1 bg-gray-100 rounded-full text-[10px] font-bold text-gray-500">Day</button>
+                        <button class="px-4 py-1 bg-maroon rounded-full text-[10px] font-bold text-white">Week</button>
+                    </div>
+                </div>
+                <div class="h-64 w-full bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Revenue Analytics Visualization</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</body>
+</html>

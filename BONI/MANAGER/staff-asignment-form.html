@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Shift | RestaurantOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-maroon { background-color: #800000; }
+        .text-maroon { color: #800000; }
+        .border-maroon { border-color: #800000; }
+        .focus-maroon:focus { border-color: #800000; ring-color: #800000; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen py-12 px-6">
+
+    <div class="max-w-3xl mx-auto">
+        <nav class="mb-8 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            <a href="#" class="hover:text-maroon">GOJO</a>
+            <span>/</span>
+            <span class="text-maroon">Staff Assignment</span>
+        </nav>
+
+        <div class="bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-gray-100">
+            <div class="bg-maroon p-8 text-white">
+                <h2 class="text-3xl font-black uppercase tracking-tighter">Shift Assignment</h2>
+                <p class="text-xs opacity-70 font-medium italic">Allocate labor resources and define station deployment</p>
+            </div>
+
+            <form class="p-10 space-y-8">
+                <div>
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Staff Member & Role</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <select class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold outline-none focus:border-maroon transition">
+                            <option selected disabled>Select Employee...</option>
+                            <option>Marcus Chen (Kitchen)</option>
+                            <option>Sarah Lopez (Floor)</option>
+                            <option>David Wu (Bar)</option>
+                        </select>
+                        <select class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold outline-none focus:border-maroon transition">
+                            <option selected disabled>Assigned Role...</option>
+                            <option>Head Chef</option>
+                            <option>Line Cook</option>
+                            <option>Server</option>
+                            <option>Busser</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Shift Window & Date</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="date" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold outline-none focus:border-maroon transition">
+                        <div class="relative">
+                            <span class="absolute left-4 top-1 text-[8px] font-bold text-gray-400 uppercase">Start</span>
+                            <input type="time" class="w-full p-4 pt-6 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold outline-none focus:border-maroon transition">
+                        </div>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1 text-[8px] font-bold text-gray-400 uppercase">End</span>
+                            <input type="time" class="w-full p-4 pt-6 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold outline-none focus:border-maroon transition">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gray-50 rounded-3xl">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-black uppercase text-gray-900">Paid Break</p>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase italic italic">30 Minutes included</p>
+                        </div>
+                        <input type="checkbox" class="w-6 h-6 accent-maroon">
+                    </div>
+                    <div class="flex items-center justify-between border-l border-gray-200 pl-6">
+                        <div>
+                            <p class="text-xs font-black uppercase text-gray-900">Training Shift</p>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase italic italic">Shadowing senior staff</p>
+                        </div>
+                        <input type="checkbox" class="w-6 h-6 accent-maroon">
+                    </div>
+                </div>
+
+                <div class="p-4 bg-red-50 rounded-2xl border border-red-100 flex gap-4 items-start">
+                    <span class="text-red-600">⚠️</span>
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-red-600 tracking-wider">Labor Alert</p>
+                        <p class="text-[11px] text-red-800 leading-tight">This shift will put <strong>Marcus Chen</strong> into 4.5 hours of Overtime for this week. Cost impact: <strong>+$112.50</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 pt-4">
+                    <button type="button" class="flex-1 py-4 bg-white border-2 border-maroon text-maroon font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-red-50 transition">Cancel</button>
+                    <button type="submit" class="flex-1 py-4 bg-maroon text-white font-black rounded-2xl shadow-xl text-xs uppercase tracking-widest hover:bg-red-950 transition">Save & Notify Staff</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="mt-8 px-8">
+            <h3 class="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-4">Manager's Constraint Checklist</h3>
+            <table class="w-full text-[11px] text-gray-500 font-medium">
+                <tr class="border-b border-gray-200">
+                    <td class="py-2">Clopening Guard?</td>
+                    <td class="py-2 text-right text-green-600 font-bold uppercase">Pass (11h Gap)</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                    <td class="py-2">Station Skill Match?</td>
+                    <td class="py-2 text-right text-green-600 font-bold uppercase">Certified</td>
+                </tr>
+                <tr>
+                    <td class="py-2">Labor Budget?</td>
+                    <td class="py-2 text-right text-red-600 font-bold uppercase">Exceeded</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .text-maroon { color: #800000; }
+        .bg-maroon { background-color: #800000; }
+        .border-maroon { border-color: #800000; }
+        .hover-maroon:hover { background-color: #600000; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 font-sans">
+
+    <div class="max-w-7xl mx-auto py-10 px-6">
+        
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-black text-maroon tracking-tight uppercase">Reservation Check</h1>
+                <p class="text-gray-500 text-sm italic">Front Desk Operations - Terminal 01</p>
+            </div>
+            <div class="text-right">
+                <span class="block text-xs font-bold text-gray-400 uppercase">Live Session</span>
+                <span class="text-sm font-bold text-maroon">Thursday, March 12, 2026</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-2 mb-8">
+            <div class="flex flex-col md:flex-row gap-2">
+                <div class="flex-1 relative">
+                    <input type="text" placeholder="Search by Phone (e.g. 0917...)" 
+                           class="w-full pl-4 pr-4 py-4 rounded-xl border-none focus:ring-2 focus:ring-maroon text-lg font-medium outline-none" />
+                </div>
+                <div class="h-10 w-px bg-gray-100 self-center hidden md:block"></div>
+                <div class="flex-1">
+                    <input type="email" placeholder="or Guest Email..." 
+                           class="w-full px-4 py-4 rounded-xl border-none focus:ring-2 focus:ring-maroon text-lg font-medium outline-none" />
+                </div>
+                <button class="bg-maroon hover-maroon text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg active:scale-95">
+                    SEARCH GUEST
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Guest Info</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-center">Party Size</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Package Tier</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Time Slot</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Status</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <tr class="hover:bg-red-50/30 transition-colors">
+                            <td class="px-6 py-5">
+                                <div class="font-bold text-gray-900">Marcus Thorne</div>
+                                <div class="text-xs text-gray-500">+63 917 555 0123</div>
+                            </td>
+                            <td class="px-6 py-5 text-center">
+                                <span class="text-lg font-black text-maroon">08</span>
+                                <span class="text-xs text-gray-400 block uppercase">Pax</span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="inline-block px-2 py-1 rounded bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-tighter border border-amber-200">
+                                    HighEnd
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div class="text-sm font-semibold">Today</div>
+                                <div class="text-xs text-gray-400 font-mono">12:30 PM</div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-green-100 text-green-700">
+                                    Confirmed
+                                </span>
+                            </td>
+                            <td class="px-6 py-5 text-right">
+                                <button class="bg-white border border-maroon text-maroon hover:bg-maroon hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition-all uppercase tracking-widest">
+                                    Check In
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-red-50/30 transition-colors">
+                            <td class="px-6 py-5">
+                                <div class="font-bold text-gray-900">Elena Rodriguez</div>
+                                <div class="text-xs text-gray-500">elena.r@email.com</div>
+                            </td>
+                            <td class="px-6 py-5 text-center">
+                                <span class="text-lg font-black text-maroon">02</span>
+                                <span class="text-xs text-gray-400 block uppercase">Pax</span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="inline-block px-2 py-1 rounded bg-red-50 text-red-700 text-[10px] font-bold uppercase tracking-tighter border border-red-200">
+                                    HardMode
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div class="text-sm font-semibold">Today</div>
+                                <div class="text-xs text-gray-400 font-mono">01:00 PM</div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-700">
+                                    Arrived
+                                </span>
+                            </td>
+                            <td class="px-6 py-5 text-right">
+                                <button class="bg-maroon text-white border border-maroon px-4 py-2 rounded-lg text-xs font-bold transition-all uppercase tracking-widest shadow-md">
+                                    Assign Table
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-red-50/30 transition-colors">
+                            <td class="px-6 py-5">
+                                <div class="font-bold text-gray-900">Jonathan Sy</div>
+                                <div class="text-xs text-gray-500">+63 920 123 4567</div>
+                            </td>
+                            <td class="px-6 py-5 text-center">
+                                <span class="text-lg font-black text-maroon">12</span>
+                                <span class="text-xs text-gray-400 block uppercase">Pax</span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="inline-block px-2 py-1 rounded bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-tighter border border-gray-200">
+                                    Normal
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <div class="text-sm font-semibold">Today</div>
+                                <div class="text-xs text-gray-400 font-mono">07:30 PM</div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-gray-100 text-gray-500">
+                                    Pending
+                                </span>
+                            </td>
+                            <td class="px-6 py-5 text-right">
+                                <button class="bg-white border border-gray-200 text-gray-400 px-4 py-2 rounded-lg text-xs font-bold transition-all uppercase tracking-widest cursor-not-allowed">
+                                    Check In
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        </div>
+
+    </div>
+</body>
+</html>

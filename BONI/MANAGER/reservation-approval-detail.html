@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation Detail | RestaurantOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-maroon { background-color: #800000; }
+        .text-maroon { color: #800000; }
+        .border-maroon { border-color: #800000; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen py-12 px-6">
+
+    <div class="max-w-5xl mx-auto">
+        <nav class="mb-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+            <a href="#" class="hover:text-maroon">Approval Queue</a>
+            <span>/</span>
+            <span class="text-maroon">Booking #RES-8821</span>
+        </nav>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden">
+                    <div class="bg-maroon p-10 text-white flex justify-between items-start">
+                        <div>
+                            <h2 class="text-4xl font-black uppercase tracking-tighter leading-none">Robert Oppenheimer</h2>
+                            <p class="text-sm opacity-70 font-bold mt-2 italic">Requesting: Today, 8:00 PM • 12 Pax</p>
+                        </div>
+                        <span class="px-4 py-2 bg-white/20 backdrop-blur-md rounded-xl text-[10px] font-black uppercase tracking-widest border border-white/30">Pending Review</span>
+                    </div>
+
+                    <div class="p-10 space-y-10">
+                        <div class="grid grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3">Guest Profile</h4>
+                                <ul class="space-y-2 text-sm font-bold text-gray-900">
+                                    <li class="flex justify-between border-b border-gray-50 pb-2"><span>Status</span> <span class="text-amber-600 italic">First-Timer</span></li>
+                                    <li class="flex justify-between border-b border-gray-50 pb-2"><span>Phone</span> <span>+1 555-098-112</span></li>
+                                    <li class="flex justify-between"><span>Lifetime Spend</span> <span>$0.00</span></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-3">Booking Metadata</h4>
+                                <ul class="space-y-2 text-sm font-bold text-gray-900">
+                                    <li class="flex justify-between border-b border-gray-50 pb-2"><span>Source</span> <span class="uppercase">Web/Direct</span></li>
+                                    <li class="flex justify-between border-b border-gray-50 pb-2"><span>Occasion</span> <span class="text-maroon uppercase">Corporate Dinner</span></li>
+                                    <li class="flex justify-between"><span>Prep Note</span> <span class="text-red-600 uppercase">Severe Nut Allergy</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-3xl border border-gray-100">
+                            <h4 class="text-[10px] font-black uppercase text-gray-500 tracking-widest mb-4">Table Allocation</h4>
+                            <div class="flex flex-wrap gap-3">
+                                <button class="px-6 py-3 bg-white border-2 border-maroon text-maroon rounded-2xl text-xs font-black uppercase">Table 08 & 09 (Combined)</button>
+                                <button class="px-6 py-3 bg-white border border-gray-200 text-gray-400 rounded-2xl text-xs font-black uppercase hover:border-maroon hover:text-maroon transition">Private Room B (+$50 Fee)</button>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 pt-4">
+                            <button class="flex-1 py-4 bg-gray-100 text-gray-400 font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-red-50 hover:text-red-600 transition">Decline Request</button>
+                            <button class="flex-[2] py-4 bg-maroon text-white font-black rounded-2xl shadow-2xl text-xs uppercase tracking-widest hover:bg-red-950 transition">Confirm & Send Notification</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-6">Internal Discussion</h3>
+                    <div class="space-y-4 mb-6">
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 bg-gray-100 rounded-full flex-shrink-0"></div>
+                            <div class="bg-gray-50 p-4 rounded-2xl rounded-tl-none">
+                                <p class="text-[11px] font-bold text-gray-400 uppercase mb-1">Marcus (Chef) • 10:45 AM</p>
+                                <p class="text-xs text-gray-700">Can handle 12 Pax at 8pm, but we need to fire the first course by 8:15pm to stay on track.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <textarea placeholder="Add a note for the front desk..." class="w-full bg-gray-50 border-none rounded-2xl p-4 text-xs font-medium outline-none focus:ring-1 focus:ring-maroon h-24"></textarea>
+                </div>
+            </div>
+
+            <div class="space-y-8">
+                <div class="bg-gray-900 text-white rounded-[2rem] p-8 shadow-xl">
+                    <h3 class="text-[10px] font-black uppercase tracking-widest text-maroon mb-6 italic">Floor Heatmap (8:00 PM)</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end">
+                            <span class="text-[10px] font-bold uppercase text-gray-400">Occupancy</span>
+                            <span class="text-xl font-black">94%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                            <div class="bg-red-500 h-full w-[94%]"></div>
+                        </div>
+                        <p class="text-[9px] text-gray-500 leading-tight">Approving this booking puts the restaurant at <strong>Critical Capacity</strong>. Expect higher noise levels and service delays.</p>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-[2rem] p-8">
+                    <h4 class="text-[10px] font-black text-amber-900 uppercase tracking-widest mb-4 italic">Risk Assessment</h4>
+                    <ul class="space-y-4 text-[11px] text-amber-800 leading-tight font-medium">
+                        <li class="flex gap-2"><span>•</span> <span><strong>Kitchen Load:</strong> 3 other large parties (8+) are already seated between 7:30 and 8:15 PM.</span></li>
+                        <li class="flex gap-2"><span>•</span> <span><strong>Profitability:</strong> Corporate bookings have a 25% higher cancellation rate than personal bookings. Recommend a credit card hold.</span></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
