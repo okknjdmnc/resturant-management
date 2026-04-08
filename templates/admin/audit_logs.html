@@ -33,19 +33,23 @@
                 {% for log in logs %}
                 <tr class="hover:bg-white/[0.02] transition-colors group">
                     <td class="px-8 py-4 text-[11px] text-gray-500 font-mono italic">
-                        {{ log.created_at }}
+                        {{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') if log.created_at.strftime else log.created_at }}
                     </td>
                     <td class="px-8 py-4">
                         <div class="flex flex-col">
-                            <span class="text-xs font-bold text-white group-hover:text-red-500 transition-colors">{{ log.user_email }}</span>
-                            <span class="text-[9px] text-gray-600 font-mono tracking-tighter uppercase">{{ log.user_id[:13] }}...</span>
+                            <span class="text-xs font-bold text-white group-hover:text-red-500 transition-colors">
+                                {{ log.user_email if log.user_email else 'SYSTEM' }}
+                            </span>
+                            <span class="text-[9px] text-gray-600 font-mono tracking-tighter uppercase">
+                                UID: {{ log.user_id if log.user_id else 'SYSTEM_OP' }}
+                            </span>
                         </div>
                     </td>
                     <td class="px-8 py-4">
                         <span class="px-3 py-1 rounded-lg text-[9px] font-black tracking-tighter uppercase 
-                            {% if 'SUCCESS' in log.action or 'LOGIN' in log.action %}
+                            {% if 'SUCCESS' in log.action or 'LOGIN' in log.action or 'CREATED' in log.action %}
                                 bg-green-600/10 text-green-500 border border-green-600/20
-                            {% elif 'BYPASS' in log.action %}
+                            {% elif 'BYPASS' in log.action or 'REVOKED' in log.action %}
                                 bg-yellow-600/10 text-yellow-500 border border-yellow-600/20
                             {% else %}
                                 bg-red-600/10 text-red-500 border border-red-600/20

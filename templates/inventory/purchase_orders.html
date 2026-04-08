@@ -1,0 +1,131 @@
+{% extends "inventory/inventory_base.html" %}
+
+{% block content %}
+<div class="p-8 max-w-[1400px] mx-auto">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="mb-6 p-4 rounded-2xl border 
+                    {% if category == 'success' %} border-emerald-500/20 bg-emerald-500/10 text-emerald-400
+                    {% else %} border-red-500/20 bg-red-500/10 text-red-400 {% endif %} 
+                    text-[10px] font-black uppercase tracking-widest flex items-center gap-3 italic">
+                    <span class="w-2 h-2 rounded-full {% if category == 'success' %} bg-emerald-500 {% else %} bg-red-500 {% endif %}"></span>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+        <div>
+            <h1 class="text-4xl font-black text-white italic uppercase tracking-tighter">Inbound Shipments</h1>
+            <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em] mt-1 italic">Verify and Receive Supplier Deliveries</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div class="bg-amber-500/5 border border-amber-500/10 p-8 rounded-[2.5rem] backdrop-blur-xl">
+            <p class="text-amber-500/60 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Awaiting Delivery</p>
+            {% set pending = requests|selectattr('status', 'equalto', 'PENDING')|list|length %}
+            <h3 class="text-3xl font-black text-amber-500 italic tracking-tighter">{{ pending }} <span class="text-amber-500/30 text-sm not-italic ml-2">Pending Orders</span></h3>
+        </div>
+
+        <div class="bg-zinc-900/50 border border-white/5 p-8 rounded-[2.5rem] backdrop-blur-xl group hover:border-white/10 transition-all">
+            <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Recently Processed</p>
+            {% set completed = requests|selectattr('status', 'equalto', 'COMPLETED')|list|length %}
+            <h3 class="text-3xl font-black text-white italic tracking-tighter">{{ completed }} <span class="text-zinc-700 text-sm not-italic ml-2">Completed</span></h3>
+        </div>
+    </div>
+
+    <div class="bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden backdrop-blur-xl shadow-2xl">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5 bg-white/[0.02]">
+                    <th class="p-8">Order Info</th>
+                    <th class="p-8">Item & Description</th>
+                    <th class="p-8 text-center">Qty to Receive</th>
+                    <th class="p-8 text-center">Status</th>
+                    <th class="p-8 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+                {% if requests|length > 0 %}
+                    {% for req in requests %}
+                    <tr class="hover:bg-white/[0.02] transition-all">
+                        <td class="p-8 text-[10px] text-zinc-500 font-mono italic">
+                            {{ req.created_at[:10] }}<br>
+                            <span class="text-zinc-700 font-black tracking-tighter text-[9px]">ID: #{{ req.id }}</span>
+                        </td>
+                        <td class="p-8">
+                            <span class="text-sm font-black text-white uppercase tracking-tight">{{ req.item_name }}</span>
+                            <span class="block text-[8px] text-zinc-600 font-bold uppercase mt-1">Requested by: {{ req.staff_name }}</span>
+                        </td>
+                        <td class="p-8 text-center">
+                            <span class="text-xl font-black text-indigo-400 italic">{{ req.requested_qty }}</span>
+                            <span class="text-[8px] font-black text-zinc-600 block uppercase tracking-widest">{{ req.unit }}</span>
+                        </td>
+                        <td class="p-8 text-center">
+                            {% if req.status == 'PENDING' %}
+                            <span class="px-4 py-2 rounded-full text-[8px] font-black uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20 animate-pulse">
+                                AWAITING
+                            </span>
+                            {% else %}
+                            <span class="px-4 py-2 rounded-full text-[8px] font-black uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                RECEIVED
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="p-8 text-right">
+                            {% if req.status == 'PENDING' %}
+                            <button onclick="confirmReceive('{{ req.id }}', '{{ req.item_name }}', '{{ req.requested_qty }}')" 
+                                    class="bg-indigo-600 hover:bg-white hover:text-black text-white px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all shadow-lg shadow-indigo-600/20">
+                                Confirm Receipt
+                            </button>
+                            {% else %}
+                            <div class="flex flex-col items-end">
+                                <span class="text-[8px] text-emerald-500 font-black uppercase tracking-widest italic">Inventory Updated</span>
+                                <span class="text-[7px] text-zinc-600 font-mono uppercase">{{ req.updated_at }}</span>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="p-32 text-center opacity-20">
+                            <span class="text-xs font-black uppercase tracking-[0.5em] text-white">No Deliveries Found</span>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmReceive(id, itemName, qty) {
+    Swal.fire({
+        title: 'VERIFY DELIVERY?',
+        html: `<div class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-4 italic">Confirming this will automatically update the master stock</div>
+               <div class="text-sm font-black text-indigo-400 uppercase italic underline decoration-zinc-700 underline-offset-8 decoration-2">${qty} UNITS of ${itemName}</div>`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#4f46e5',
+        cancelButtonColor: '#27272a',
+        confirmButtonText: 'CONFIRM & UPDATE STOCK',
+        cancelButtonText: 'BACK',
+        background: '#18181b',
+        color: '#ffffff',
+        customClass: {
+            popup: 'rounded-[2.5rem] border border-white/5 shadow-2xl backdrop-blur-xl bg-zinc-900/90'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Updated route mapping to inventory blueprint
+            window.location.href = `/inventory/requests/complete/${id}`;
+        }
+    })
+}
+</script>
+{% endblock %}

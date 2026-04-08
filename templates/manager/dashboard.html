@@ -1,47 +1,137 @@
 {% extends "manager/manager_base.html" %}
-{% block title %}Operations{% endblock %}
+{% block title %}Operations Dashboard{% endblock %}
 
 {% block manager_content %}
 <header class="mb-10">
     <h2 class="text-3xl font-black uppercase italic tracking-tighter">Operational <span class="text-cyan-500">Intelligence</span></h2>
     <p class="text-[10px] text-gray-500 uppercase tracking-[0.4em] mt-1">Gojo House Management System v2.0</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 mt-8">
+        {# TOTAL REVENUE #}
+        <div class="bg-gradient-to-br from-cyan-600 to-blue-700 p-8 rounded-[2rem] shadow-xl shadow-cyan-500/10">
+            <p class="text-white/60 text-[10px] uppercase font-black tracking-widest mb-1">Total Gross Revenue</p>
+            <h3 class="text-4xl font-black text-white italic tracking-tighter">₱{{ "{:,.2f}".format(grand_total or 0) }}</h3>
+        </div>
+
+        {# BOOKED TABLES COUNT #}
+        <div class="bg-white/[0.02] border border-white/10 p-8 rounded-[2rem]">
+            <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-1">Table Reservations</p>
+            <h3 class="text-3xl font-black text-white italic tracking-tighter">{{ table_count or 0 }}</h3>
+            <p class="text-[9px] text-cyan-500 font-bold mt-2 uppercase tracking-widest italic">Confirmed Entries</p>
+        </div>
+
+        {# EVENT BOOKINGS COUNT #}
+        <div class="bg-white/[0.02] border border-white/10 p-8 rounded-[2rem]">
+            <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-1">Event Bookings</p>
+            <h3 class="text-3xl font-black text-white italic tracking-tighter">{{ event_count or 0 }}</h3>
+            <p class="text-[9px] text-indigo-500 font-bold mt-2 uppercase tracking-widest italic">Private Functions</p>
+        </div>
+
+        {# AVERAGE PER HEAD (Fixed: Added divide by zero protection) #}
+        <div class="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem]">
+            <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-1">Average / Head</p>
+            {% set total_customers = (table_count or 0) + (event_count or 0) %}
+            <h3 class="text-3xl font-black text-white italic tracking-tighter">
+                ₱{{ "{:,.2f}".format(grand_total / total_customers) if total_customers > 0 else "0.00" }}
+            </h3>
+        </div>
+    </div>
 </header>
 
+{# --- QUICK ACTIONS & STATUS SECTION --- #}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] relative overflow-hidden group">
-        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-            <svg class="w-16 h-16 text-cyan-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+    {# PROJECTION CARD #}
+    <div class="bg-white/[0.02] border border-cyan-500/20 p-8 rounded-[2rem] flex flex-col justify-between">
+        <div>
+            <p class="text-cyan-500 text-[10px] uppercase font-black tracking-widest mb-1">Monthly Projection</p>
+            <h3 class="text-3xl font-black text-white italic tracking-tighter">₱{{ "{:,.2f}".format(projected_total or 0) }}</h3>
         </div>
-        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Pending Reservations</p>
-        <h3 class="text-5xl font-black text-white italic tracking-tighter">{{ pending_reservations }}</h3>
+        <div class="mt-4">
+            <div class="flex justify-between text-[8px] font-black uppercase mb-1">
+                <span class="text-gray-500">Target: ₱{{ "{:,.0f}".format(monthly_target or 500000) }}</span>
+                <span class="text-cyan-500">{{ (progress_percent or 0)|round|int }}%</span>
+            </div>
+            <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-cyan-500 h-full transition-all duration-1000" style="width: {{ progress_percent or 0 }}%"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem]">
-        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Inventory Alert</p>
-        <h3 class="text-5xl font-black text-amber-500 italic tracking-tighter">{{ low_stock_count }}<span class="text-xs ml-2 text-gray-600">Low Stock</span></h3>
-    </div>
+    {# PURCHASE REQUESTS #}
+    <a href="#" class="group bg-indigo-500/5 border border-indigo-500/20 p-8 rounded-[2rem] flex items-center justify-between hover:bg-indigo-500/10 transition-all">
+        <div class="flex items-center space-x-4">
+            <div class="h-12 w-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            </div>
+            <div>
+                <h4 class="text-white text-xs font-black uppercase tracking-widest italic">Requests</h4>
+                <p class="text-[9px] text-indigo-400 font-bold uppercase mt-1 tracking-tighter">
+                    {{ pending_purchase_count or 0 }} pending
+                </p>
+            </div>
+        </div>
+        <div class="text-indigo-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </div>
+    </a>
 
-    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem]">
-        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Active Staff</p>
-        <h3 class="text-5xl font-black text-white italic tracking-tighter">8</h3>
+    {# INVENTORY ALERT #}
+    <div class="bg-red-500/5 border border-red-500/20 p-8 rounded-[2rem] flex items-center space-x-4">
+        <div class="h-12 w-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500 {% if low_stock_count and low_stock_count > 0 %}animate-pulse{% endif %}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        </div>
+        <div>
+            <h4 class="text-white text-xs font-black uppercase tracking-widest italic">Low Stocks</h4>
+            <p class="text-[9px] text-red-400 font-bold uppercase mt-1 tracking-tighter">
+                {{ low_stock_count or 0 }} critical items
+            </p>
+        </div>
     </div>
 </div>
 
+{# --- LOWER SECTION: TIER BREAKDOWN & LOSS --- #}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <div class="bg-white/[0.02] border border-white/5 rounded-[2rem] p-8">
-        <div class="flex justify-between items-center mb-6">
-            <h4 class="text-xs font-black uppercase tracking-widest">Incoming Guests</h4>
-            <button class="text-[9px] font-bold text-cyan-500 uppercase">View All</button>
-        </div>
-        <div class="space-y-4">
-            <div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl flex justify-between items-center">
-                <div>
-                    <p class="text-xs font-bold">Christian Dev</p>
-                    <p class="text-[9px] text-gray-500">5 Persons • 7:00 PM</p>
+    {# TIER SALES SUMMARY #}
+    <div class="bg-white/[0.02] border border-white/5 rounded-[3rem] p-10">
+        <h4 class="text-xs font-black uppercase tracking-widest mb-8 italic">Revenue by Tier</h4>
+        <div class="space-y-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="h-3 w-3 rounded-full bg-green-500"></div>
+                    <span class="text-[10px] font-black uppercase text-gray-400">Normal Tier</span>
                 </div>
-                <span class="px-3 py-1 bg-cyan-500/10 text-cyan-500 rounded-lg text-[9px] font-black uppercase">Confirmed</span>
+                <span class="text-white font-black italic">₱{{ "{:,.2f}".format(tier_sales.normal or 0) }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="h-3 w-3 rounded-full bg-yellow-500"></div>
+                    <span class="text-[10px] font-black uppercase text-gray-400">High Tier</span>
+                </div>
+                <span class="text-white font-black italic">₱{{ "{:,.2f}".format(tier_sales.high or 0) }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="h-3 w-3 rounded-full bg-red-500"></div>
+                    <span class="text-[10px] font-black uppercase text-gray-400">Hard Tier</span>
+                </div>
+                <span class="text-white font-black italic">₱{{ "{:,.2f}".format(tier_sales.hard or 0) }}</span>
             </div>
         </div>
+    </div>
+
+    {# LOSS & SPOILAGE #}
+    <div class="bg-red-950/10 border border-red-500/10 rounded-[3rem] p-10 flex flex-col justify-center">
+        <p class="text-red-500 text-[10px] uppercase font-black tracking-widest mb-2">Total Spoilage & Losses</p>
+        <h3 class="text-5xl font-black text-white italic tracking-tighter">₱{{ "{:,.2f}".format(total_spoilage_loss or 0) }}</h3>
+        <p class="text-gray-500 text-[9px] mt-4 uppercase font-bold leading-relaxed">
+            Combined unrecoverable costs from kitchen spoilage and expired inventory items.
+        </p>
     </div>
 </div>
 {% endblock %}

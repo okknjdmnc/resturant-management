@@ -1,0 +1,36 @@
+{% extends "./base.html" %}
+{% block content %}
+<section class="min-h-screen bg-[#0f0f0f] pt-32 pb-20 px-6">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter">Event Packages</h2>
+            <p class="text-gray-500 mt-2">Exclusive packages for your special celebrations</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            {% for pkg in packages %}
+            <div class="bg-white/[0.03] border border-white/10 p-8 rounded-3xl flex flex-col justify-between hover:border-red-500/50 transition-all group">
+                <div>
+                    <h3 class="text-2xl font-bold text-white mb-2">{{ pkg.name }}</h3>
+                    <p class="text-yellow-500 font-mono text-sm mb-6">{{ pkg.pax }}</p>
+                    <ul class="space-y-3 mb-8">
+                        {% for inc in pkg.inclusion %}
+                        <li class="text-gray-400 text-sm flex items-center gap-2">
+                            <span class="text-red-500">✔</span> {{ inc }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <p class="text-3xl font-black text-white mb-6">₱{{ "{:,.2f}".format(pkg.price) }}</p>
+                    <a href="{{ url_for('customer.event_form', package=pkg.id) }}" 
+                       class="block text-center py-4 bg-red-600 text-white font-bold rounded-xl uppercase tracking-widest hover:bg-red-700 transition-all">
+                        Select Package
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

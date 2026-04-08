@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gojo Ops | Inventory Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        [x-cloak] { display: none !important; }
+        body { font-family: 'Inter', sans-serif; background-color: #09090b; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="text-zinc-400 antialiased custom-scrollbar">
+
+    <aside class="fixed inset-y-0 left-0 w-72 bg-black border-r border-white/5 hidden md:flex flex-col z-50">
+        <div class="p-8">
+            <div class="flex items-center gap-3">
+                <div class="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black shadow-lg shadow-indigo-600/20">G</div>
+                <div>
+                    <h1 class="text-xl font-black text-white italic tracking-tighter uppercase leading-none">
+                        Gojo<span class="text-indigo-500">House</span>
+                    </h1>
+                    <p class="text-[8px] uppercase tracking-[0.4em] text-zinc-600 font-bold mt-1">Logistics Unit</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-1 px-6 space-y-1.5 overflow-y-auto custom-scrollbar">
+            <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.3em] mb-4 mt-2 px-2">Main Terminal</p>
+            
+            <a href="{{ url_for('inventory.dashboard') }}" 
+               class="flex items-center justify-between px-4 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all group
+               {% if request.endpoint == 'inventory.dashboard' %} bg-indigo-600 text-white shadow-lg shadow-indigo-600/10 {% else %} hover:bg-white/5 text-zinc-500 hover:text-zinc-200 {% endif %}">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                    <span>Monitor</span>
+                </div>
+                {% if request.endpoint == 'inventory.dashboard' %}
+                <div class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></div>
+                {% endif %}
+            </a>
+
+            <a href="{{ url_for('inventory.add_item') }}" 
+               class="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all group
+               {% if request.endpoint == 'inventory.add_item' %} bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 {% else %} hover:bg-white/5 text-zinc-500 hover:text-zinc-200 {% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" /></svg>
+                <span>Stock Arrival</span>
+            </a>
+
+            <p class="text-[9px] font-black text-zinc-700 uppercase tracking-[0.3em] mb-4 mt-8 px-2">Operations</p>
+
+            <a href="{{ url_for('inventory.kitchen_orders') }}" 
+               class="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all group
+               {% if request.endpoint == 'inventory.view_requests' %} bg-blue-600/10 text-blue-400 border border-blue-500/20 {% else %} hover:bg-white/5 text-zinc-500 hover:text-zinc-200 {% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                <span>Kitchen Orders</span>
+            </a>
+
+            <a href="{{ url_for('inventory.eod_returns') }}" 
+               class="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all group
+               {% if request.endpoint == 'inventory.return_view' %} bg-amber-600/10 text-amber-400 border border-amber-500/20 {% else %} hover:bg-white/5 text-zinc-500 hover:text-zinc-200 {% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 15v-6a4 4 0 00-4-4H4m12 10l3-3m-3 3l-3-3" /></svg>
+                <span>EOD Returns</span>
+            </a>
+
+            <a href="{{ url_for('inventory.report_waste') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all text-zinc-500 hover:bg-red-500/5 hover:text-red-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <span>Report Waste</span>
+            </a>
+        </nav>
+
+        <div class="p-6 border-t border-white/5 bg-zinc-950/50">
+            <div class="bg-zinc-900/50 rounded-[1.5rem] p-4 flex items-center gap-3 border border-white/5">
+                <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-indigo-500/20">
+                    {{ session.get('user_name', 'S')[0] | upper }}
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-[10px] font-black text-white truncate uppercase tracking-tighter">{{ session.get('user_name', 'Inventory Staff') }}</p>
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-1 w-1 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <p class="text-[7px] text-zinc-500 uppercase tracking-widest font-black italic">Active Session</p>
+                    </div>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="p-2 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="md:ml-72 min-h-screen">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="fixed top-6 right-6 z-[100] w-full max-w-sm space-y-3">
+              {% for category, message in messages %}
+                <div class="p-4 rounded-2xl border bg-black/80 backdrop-blur-xl animate-slide-in shadow-2xl flex items-center gap-4
+                  {% if category == 'success' %} border-emerald-500/30 text-emerald-400 {% else %} border-red-500/30 text-red-400 {% endif %}">
+                  <div class="h-2 w-2 rounded-full {% if category == 'success' %} bg-emerald-500 {% else %} bg-red-500 {% endif %} shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                  <p class="text-[10px] font-black uppercase tracking-[0.1em]">{{ message }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="p-4 md:p-10 max-w-7xl mx-auto">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</body>
+</html>

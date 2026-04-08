@@ -1,0 +1,67 @@
+{% extends "inventory/inventory_base.html" %}
+{% block content %}
+
+<div class="p-8">
+    <div class="flex justify-between items-end mb-10">
+        <div>
+            <h1 class="text-4xl font-black italic tracking-tighter uppercase text-indigo-500">Dispatch <span class="text-white">Control</span></h1>
+            <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em]">Kitchen Order Fulfillment & Stock Release</p>
+        </div>
+        <div class="text-right">
+            <p class="text-[9px] font-black text-zinc-500 uppercase">Warehouse Status</p>
+            <p class="text-xs font-black text-emerald-500 uppercase">Ready for Dispatch</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-4">
+            {% for kot in kots %}
+            <div class="bg-zinc-900/50 border border-white/5 rounded-3xl p-6 flex justify-between items-center group hover:border-indigo-500/50 transition-all">
+                <div class="flex gap-6 items-center">
+                    <div class="bg-indigo-500 text-black w-14 h-14 rounded-2xl flex flex-col items-center justify-center">
+                        <span class="text-[8px] font-black uppercase leading-none opacity-50">Table</span>
+                        <span class="text-2xl font-black italic">{{ kot.table_number }}</span>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-white uppercase tracking-tight">{{ kot.items_ordered }}</p>
+                        <p class="text-[8px] font-bold text-zinc-500 uppercase mt-1">OR: {{ kot.or_number }} • {{ kot.created_at.strftime('%H:%M %p') }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <span class="text-[8px] font-black uppercase px-3 py-1 bg-white/5 rounded-full text-zinc-500">{{ kot.status }}</span>
+                    <form action="{{ url_for('inventory.dispatch_stock', kot_id=kot.id) }}" method="POST">
+                        <button type="submit" 
+                                class="px-5 py-3 bg-indigo-600 hover:bg-white hover:text-black text-white text-[9px] font-black uppercase rounded-xl transition-all shadow-lg shadow-indigo-900/20 active:scale-95">
+                            <i class="fa-solid fa-truck-ramp-box mr-2"></i> Confirm Release
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="py-20 text-center border-2 border-dashed border-white/5 rounded-[3rem]">
+                <p class="text-[10px] font-black text-zinc-600 uppercase tracking-widest">No pending dispatches</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="bg-zinc-900/80 border border-white/10 rounded-[2.5rem] p-6 h-fit sticky top-8">
+            <h2 class="text-[10px] font-black text-white uppercase tracking-widest mb-6 border-b border-white/5 pb-4">Live Kitchen Stock</h2>
+            <div class="space-y-4">
+                {% for stock in stocks %}
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] font-black text-zinc-300 uppercase leading-none">{{ stock.item_name }}</p>
+                        <p class="text-[8px] font-bold text-zinc-600 uppercase">{{ stock.unit }}</p>
+                    </div>
+                    <p class="text-xs font-mono font-black {% if stock.transferred_quantity < 5 %}text-red-500{% else %}text-emerald-500{% endif %}">
+                        {{ "%.2f"|format(stock.transferred_quantity) }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

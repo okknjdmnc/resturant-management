@@ -11,17 +11,33 @@
             <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Create credentials for restaurant personnel</p>
         </div>
 
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                <div class="bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] uppercase tracking-widest p-4 rounded-xl mb-6 text-center font-bold">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <form action="{{ url_for('admin.add_staff') }}" method="POST" class="space-y-6">
+             <div>
+                <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Personnel Name</label>
+                <input type="text" name="name" placeholder="Name" required
+                       class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-red-600 transition-all">
+            </div>
+
             <div>
                 <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Personnel Email</label>
-                <input type="email" name="email" required placeholder="staff@gogihouse.com" 
+                <input type="email" name="email" placeholder="staff@gojohouse.com" required
                        class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-red-600 transition-all">
             </div>
 
             <div class="relative">
                 <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Temporary Password</label>
                 <div class="relative">
-                    <input type="password" id="staff_password" name="password" required placeholder="••••••••" 
+                    <input type="password" id="staff_password" name="password" placeholder="••••••••" required
                         class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-red-600 transition-all pr-12">
                     
                     <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
@@ -62,11 +78,12 @@
                 <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Access Level / Role</label>
                 <select name="role" required 
                         class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm text-white focus:outline-none focus:border-red-600 transition-all appearance-none cursor-pointer">
-                    <option value="waiter" class="bg-[#0a0a0a]">Waiter (POS Access)</option>
-                    <option value="kitchen" class="bg-[#0a0a0a]">Kitchen (KOT Access)</option>
+                    <option value="kitchen" class="bg-[#0a0a0a]">Kitchen Staff (KOT Access)</option>
+                    <option value="staff" class="bg-[#0a0a0a]">Inventory Staff (Inventory Access)</option>
                     <option value="cashier" class="bg-[#0a0a0a]">Cashier (Billing Access)</option>
                     <option value="front_desk" class="bg-[#0a0a0a]">Front Desk (Front Desk)</option>
-                    <option value="super_admin" class="bg-[#0a0a0a]">Co-Admin (Full Access)</option>
+                    <option value="manager" class="bg-[#0a0a0a]">Admin (Manager)</option>
+                    <option value="super_admin" class="bg-[#0a0a0a]">Admin (Super Admin)</option>
                 </select>
             </div>
 
@@ -89,17 +106,20 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-white/[0.01]">
-                                <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black">Staff Email</th>
+                                <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black">Staff Details</th>
                                 <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black">Access Level</th>
                                 <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black">Status</th>
-                                <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black">Actions</th>
+                                <th class="px-8 py-4 text-[9px] uppercase tracking-widest text-gray-400 font-black text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/[0.03]">
-                            {% for member in staff_list %}
+                            {% for member in staff %}
                             <tr class="hover:bg-white/[0.02] transition-colors group">
                                 <td class="px-8 py-4">
-                                    <span class="text-xs font-bold text-white">{{ member.full_name }}</span>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-white">{{ member.full_name }}</span>
+                                        <span class="text-[9px] text-gray-500 font-mono">{{ member.email }}</span>
+                                    </div>
                                 </td>
                                 <td class="px-8 py-4">
                                     <span class="px-3 py-1 rounded-lg text-[9px] font-black tracking-tighter uppercase 
@@ -113,14 +133,22 @@
                                 </td>
                                 <td class="px-8 py-4">
                                     <div class="flex items-center space-x-2">
-                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                                         <span class="text-[10px] text-gray-400 font-bold uppercase">Active</span>
                                     </div>
                                 </td>
-                                <td class="px-8 py-4">
-                                    <button class="text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-red-500 transition-colors">
-                                        Revoke Access
-                                    </button>
+                                <td class="px-8 py-4 text-right">
+                                    {% if member.role != 'super_admin' %}
+                                        <form action="{{ url_for('admin.revoke_access', user_id=member.id) }}" 
+                                              method="POST" 
+                                              onsubmit="return confirm('Revoke system access for {{ member.full_name }}?')">
+                                            <button type="submit" class="text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-red-500 transition-colors">
+                                                Revoke Access
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-[9px] font-black uppercase tracking-widest text-white/10 italic">Protected</span>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -131,6 +159,13 @@
         </div>
     </div>
 </div>
+
+<script>
+function togglePassword() {
+    const pwd = document.getElementById('staff_password');
+    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+}
+</script>
 
 {% block js %}
     <script src="{{ url_for('static', filename='js/password_check.js') }}"></script>

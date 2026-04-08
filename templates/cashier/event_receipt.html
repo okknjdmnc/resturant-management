@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EVENT OR #{{ ev.id }} - Gojo House</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body { background: white; }
+            .no-print { display: none; }
+            .print-area { width: 80mm; margin: 0 auto; border: none; }
+        }
+        .receipt-font { font-family: 'Courier New', Courier, monospace; }
+    </style>
+</head>
+<body class="bg-zinc-900 flex flex-col items-center py-10">
+
+    <div class="print-area bg-white text-black p-6 w-[80mm] shadow-2xl rounded-sm receipt-font">
+        
+        <div class="text-center border-b-2 border-dashed border-gray-300 pb-4 mb-4">
+            <h1 class="text-2xl font-black uppercase italic tracking-tighter">Gojo House</h1>
+            <p class="text-[9px] uppercase tracking-widest text-indigo-600 font-bold">Official Event Receipt</p>
+            <p class="text-[7px] mt-1 text-gray-500 underline">EVENT & BANQUET SERVICES</p>
+        </div>
+
+        <div class="text-[10px] space-y-1 mb-4">
+            <div class="flex justify-between">
+                <span>OR Number:</span>
+                <span class="font-bold">#EV-{{ ev.id }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span>Date Paid:</span>
+                <span id="receiptDate"></span>
+            </div>
+            <div class="flex justify-between">
+                <span>Client:</span>
+                <span class="font-bold uppercase">{{ ev.full_name }}</span>
+            </div>
+        </div>
+
+        <div class="bg-indigo-50 p-2 border border-indigo-100 mb-4 text-[9px]">
+            <p class="font-bold uppercase text-indigo-800">Event: {{ ev.event_type }}</p>
+            <p class="text-gray-600 italic">Date: {{ ev.event_date }}</p>
+        </div>
+
+        <div class="text-[10px] space-y-2 border-b-2 border-dashed border-gray-300 pb-4 mb-4">
+            <div class="flex justify-between">
+                <span>Venue/Base Package</span>
+                <span>₱{{ "{:,.2f}".format(base_fee) }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span>Catering ({{ ev.pax }} Pax)</span>
+                <span>₱{{ "{:,.2f}".format(per_head * ev.pax) }}</span>
+            </div>
+            
+            <div class="flex justify-between pt-2 font-bold border-t border-gray-100 mt-2">
+                <span>Gross Total:</span>
+                <span>₱{{ "{:,.2f}".format(total_bill) }}</span>
+            </div>
+        </div>
+
+        <div class="text-center mb-6 py-4 bg-zinc-50 rounded-lg">
+            <p class="text-[9px] uppercase font-bold text-gray-400">Total Amount Settled</p>
+            <h2 class="text-3xl font-black italic">₱{{ "{:,.2f}".format(total_bill) }}</h2>
+            <p class="text-[9px] uppercase mt-1">Method: <span class="font-bold">{{ payment_method }}</span></p>
+        </div>
+
+        <div class="text-center text-[8px] space-y-1 text-gray-500 italic">
+            <p>Thank you for choosing Gojo House for your event!</p>
+            <p>Processed by: {{ session.get('name', 'CASHIER') }}</p>
+            <div class="mt-4 pt-4 border-t border-gray-200 not-italic font-bold text-black uppercase">
+                *** PAID IN FULL ***
+            </div>
+        </div>
+    </div>
+
+    <div class="no-print mt-8 flex space-x-4">
+        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-full font-black text-xs uppercase transition-all shadow-lg">
+            Print Event OR
+        </button>
+        <a href="{{ url_for('cashier.dashboard') }}" class="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full font-bold text-xs uppercase transition-all">
+            Return to POS
+        </a>
+    </div>
+
+    <script>
+        document.getElementById('receiptDate').innerText = new Date().toLocaleString();
+    </script>
+</body>
+</html>

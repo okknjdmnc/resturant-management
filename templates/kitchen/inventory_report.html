@@ -1,0 +1,60 @@
+{% extends "kitchen/kitchen_base.html" %}
+{% block kitchen_content %}
+<div class="min-h-screen bg-black text-white p-8">
+    <div class="flex justify-between items-center mb-10">
+        <div>
+            <h1 class="text-5xl font-black italic tracking-tighter uppercase">Daily Inventory Report</h1>
+            <p class="text-zinc-500 font-bold uppercase tracking-widest text-xs">Stock Deductions & Usage Summary</p>
+        </div>
+        <a href="{{ url_for('kitchen.active_sessions') }}" class="px-6 py-3 bg-zinc-900 border border-white/10 rounded-2xl font-black text-xs uppercase hover:bg-white hover:text-black transition-all">
+            Back to Dining
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+        <div class="bg-zinc-900/50 p-6 rounded-3xl border border-white/5">
+            <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Total Refill Logs</p>
+            <p class="text-3xl font-black italic text-emerald-500">{{ logs|length }}</p>
+        </div>
+    </div>
+
+    <div class="bg-zinc-900/30 rounded-[2.5rem] border border-white/5 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-zinc-900/80 border-b border-white/5">
+                    <th class="p-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">Time</th>
+                    <th class="p-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">Item Name</th>
+                    <th class="p-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">Action</th>
+                    <th class="p-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Qty (kg)</th>
+                    <th class="p-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">Prev → New</th>
+                    <th class="p-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">Remarks</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5 font-mono">
+                {% for log in logs %}
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                    <td class="p-6 text-xs text-zinc-400">{{ log.created_at[11:19] }}</td>
+                    <td class="p-6 text-xs font-black uppercase text-white tracking-tighter">
+                        {{ log.inventory.item_name if log.inventory else 'Unknown Item' }}
+                    </td>
+                    <td class="p-6">
+                        <span class="px-2 py-1 {% if log.action_type == 'REFILL' %}bg-emerald-500/10 text-emerald-500{% else %}bg-indigo-500/10 text-indigo-400{% endif %} text-[9px] font-black rounded-md">
+                            {{ log.action_type }}
+                        </span>
+                    </td>
+                    <td class="p-6 text-center text-xs font-black text-emerald-400">-{{ log.quantity }}</td>
+                    <td class="p-6 text-[10px] text-zinc-500">
+                        {{ log.previous_stock }} <span class="text-zinc-700 mx-1">→</span> {{ log.new_stock }}
+                    </td>
+                    <td class="p-6 text-[10px] text-zinc-400 italic">{{ log.remarks }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="p-20 text-center text-zinc-600 font-black uppercase tracking-widest">No logs recorded for today</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

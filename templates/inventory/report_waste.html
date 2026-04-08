@@ -1,0 +1,56 @@
+{% extends "inventory/inventory_base.html" %}
+{% block content %}
+
+<div class="p-8 max-w-2xl mx-auto">
+    <div class="mb-10">
+        <h1 class="text-4xl font-black italic tracking-tighter uppercase text-red-500">Report <span class="text-white">Waste</span></h1>
+        <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mt-2 italic">Loss Documentation & Stock Adjustment</p>
+    </div>
+
+    <div class="bg-zinc-900/50 border border-red-500/10 rounded-[2.5rem] p-8 backdrop-blur-md">
+        <form action="{{ url_for('inventory.report_waste') }}" method="POST" class="space-y-6">
+            
+            <div class="grid grid-cols-2 gap-4">
+                <label class="cursor-pointer">
+                    <input type="radio" name="source" value="Warehouse" class="peer hidden" checked>
+                    <div class="p-4 bg-white/5 border border-white/5 rounded-2xl text-center peer-checked:border-red-500 peer-checked:bg-red-500/10 transition-all">
+                        <p class="text-[9px] font-black uppercase text-zinc-500 peer-checked:text-red-500">Warehouse Waste</p>
+                    </div>
+                </label>
+                <label class="cursor-pointer">
+                    <input type="radio" name="source" value="Kitchen" class="peer hidden">
+                    <div class="p-4 bg-white/5 border border-white/5 rounded-2xl text-center peer-checked:border-red-500 peer-checked:bg-red-500/10 transition-all">
+                        <p class="text-[9px] font-black uppercase text-zinc-500 peer-checked:text-red-500">Kitchen Waste</p>
+                    </div>
+                </label>
+            </div>
+
+            <div>
+                <label class="text-[9px] font-black uppercase text-zinc-500 tracking-widest ml-2">Select Discarded Item</label>
+                <select name="item_name" class="w-full mt-2 bg-black border border-white/10 rounded-2xl p-4 text-xs font-black uppercase tracking-tight focus:border-red-500 outline-none transition-all">
+                    {% for item in items %}
+                        <option value="{{ item.item_name }}">{{ item.item_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="text-[9px] font-black uppercase text-zinc-500 tracking-widest ml-2">Estimated Weight (kg)</label>
+                <input type="number" step="0.01" name="quantity" placeholder="0.00" required
+                    class="w-full mt-2 bg-black border border-white/10 rounded-2xl p-4 text-lg font-mono font-black text-red-500 outline-none focus:border-red-500 transition-all">
+            </div>
+
+            <div>
+                <label class="text-[9px] font-black uppercase text-zinc-500 tracking-widest ml-2">Reason for Disposal</label>
+                <textarea name="reason" rows="3" placeholder="e.g. Expired meat found during shift check..."
+                    class="w-full mt-2 bg-black border border-white/10 rounded-2xl p-4 text-[11px] text-zinc-300 outline-none focus:border-red-500 transition-all"></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-5 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-black uppercase italic tracking-widest transition-all shadow-xl shadow-red-900/20">
+                Log Waste & Adjust Stock
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

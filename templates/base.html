@@ -47,9 +47,9 @@
       </a>
       <div class="hidden md:flex items-center gap-8">
         <a href="{{ url_for('customer.index') }}" class="text-sm tracking-wider hover:text-yellow-400 transition-colors uppercase">Home</a>
-        <a href="/menu" class="text-sm tracking-wider hover:text-yellow-400 transition-colors uppercase">Menu</a>
+        <a href="{{ url_for('customer.menu') }}" class="text-sm tracking-wider hover:text-yellow-400 transition-colors uppercase">Menu</a>
         <a href="#tiers" class="text-sm tracking-wider hover:text-yellow-400 transition-colors uppercase">Tiers</a>
-        <a href="{{ url_for('customer.reserve_selection') }}" class="px-5 py-2 bg-red-700 hover:bg-red-600 transition-colors rounded-full text-sm font-semibold tracking-wider">Reserve Now</a>
+        <a href="#" class="px-5 py-2 bg-red-700 hover:bg-red-600 transition-colors rounded-full text-sm font-semibold tracking-wider">Reserve Now</a>
       </div>
       <button class="md:hidden" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +62,7 @@
         <a href="/" class="text-sm tracking-wider hover:text-yellow-400 uppercase">Home</a>
         <a href="/menu" class="text-sm tracking-wider hover:text-yellow-400 uppercase">Menu</a>
         <a href="#tiers" class="text-sm tracking-wider hover:text-yellow-400 uppercase">Tiers</a>
-        <a href="{{ url_for('customer.reserve_selection') }}" class="px-5 py-2 bg-red-700 text-center rounded-full text-sm font-semibold">Reserve Now</a>
+        <a href="#" class="px-5 py-2 bg-red-700 text-center rounded-full text-sm font-semibold">Reserve Now</a>
       </div>
     </div>
   </nav>
@@ -102,5 +102,6 @@
   </footer>
   {% block js %}{% endblock %}
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+   <script src="{{ url_for('static', filename='js/security.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,41 @@
+{% extends "cashier/cashier_base.html" %}
+{% block cashier_content %}
+<div class="max-w-sm mx-auto bg-white text-black p-8 font-mono text-sm shadow-lg rounded-sm" id="printableReceipt">
+    <div class="text-center border-b border-dashed border-black pb-4 mb-4">
+        <h2 class="font-bold text-lg">GOJO HOUSE</h2>
+        <p>Novaliches, Quezon City</p>
+        <p class="text-[10px]">Date: {{ receipt.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+    </div>
+    
+    <div class="space-y-2 pb-4 border-b border-dashed border-black">
+        <p>OR NO: <span class="float-right font-bold">{{ receipt.or_number }}</span></p>
+        <p>GUEST: <span class="float-right">{{ receipt.guest_name }}</span></p>
+    </div>
+
+    <div class="py-4 space-y-2">
+        <p>TOTAL DUE: <span class="float-right">P{{ "{:,.2f}".format(receipt.total_amount) }}</span></p>
+        <p>CASH: <span class="float-right">P{{ "{:,.2f}".format(receipt.cash_received) }}</span></p>
+        <div class="border-t border-black pt-2 font-bold italic">
+            <p>CHANGE: <span class="float-right">P{{ "{:,.2f}".format(receipt.change_amount) }}</span></p>
+        </div>
+    </div>
+
+    <div class="text-center text-[10px] mt-8">
+        <p>Thank you for dining at Gojo House!</p>
+        <p>This serves as your official receipt.</p>
+    </div>
+</div>
+
+<div class="flex gap-4 mt-6 justify-center no-print">
+    <button onclick="window.print()" class="bg-zinc-800 px-6 py-2 rounded-xl text-xs font-bold uppercase">Print Receipt</button>
+    <a href="{{ url_for('cashier.dashboard') }}" class="bg-yellow-500 text-black px-6 py-2 rounded-xl text-xs font-bold uppercase">Back to Dashboard</a>
+</div>
+
+<style>
+    @media print {
+        .no-print, nav { display: none !important; }
+        body { background: white !important; color: black !important; }
+        #printableReceipt { box-shadow: none !important; border: none !important; margin: 0 auto !important; }
+    }
+</style>
+{% endblock %}

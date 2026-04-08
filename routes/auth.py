@@ -1,89 +1,138 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from supabase import create_client
-from datetime import datetime, timezone, timedelta
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
+from datetime import datetime, timedelta, timezone
 import random
-import resend
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from werkzeug.security import check_password_hash
+from app import limiter, get_db_connection
 
 auth_bp = Blueprint('auth', __name__)
 
-RESEND_API_KEY = "re_7zP9qTJ6_2T4wTvsYa9Jpnq714bWLhxsr"
-resend.api_key = RESEND_API_KEY
+MAX_ATTEMPTS = 3
 
-def get_supabase():
-    url = "https://vtsmhotqxtmwyhwznvlx.supabase.co"
-    key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0c21ob3RxeHRtd3lod3pudmx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1Mzg0MDcsImV4cCI6MjA4ODExNDQwN30.JpH5FZSt6R6ODbxPQ8-K8tpCiF90IOpbumRPbeS1wHA"
+# --- GMAIL SMTP FUNCTION (Same as before) ---
+def send_otp_email(receiver_email, otp_code):
+    sender_email = "chrmasong@gmail.com"
+    app_password = "stbu vkhx otzj fbdd"
+    message = MIMEMultipart()
+    message["From"] = f"Gojo House <{sender_email}>"
+    message["To"] = receiver_email
+    message["Subject"] = f"{otp_code} is your Verification Code"
+    
+    body = f"""
+    <html>
+        <body style="font-family: sans-serif; background-color: #000; color: #fff; padding: 20px;">
+            <div style="border: 1px solid #333; padding: 40px; border-radius: 20px; text-align: center;">
+                <h1 style="color: #00f2ff; letter-spacing: 5px;">GOJO HOUSE</h1>
+                <p>Your verification code is:</p>
+                <h2 style="font-size: 40px; font-weight: bold; letter-spacing: 10px; color: #fff;">{otp_code}</h2>
+                <p style="font-size: 10px; color: #555;">Expires in 5 minutes.</p>
+            </div>
+        </body>
+    </html>
+    """
+    message.attach(MIMEText(body, "html"))
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, app_password)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+        return True
+    except Exception as e:
+        print(f"SMTP ERROR: {e}")
+        return False
 
-    print(f"DEBUG: URL is {url}")
-    print(f"DEBUG: Key starts with {key[:15]}")
-    return create_client(url, key)
-
-def send_otp_email(email, code):
-    resend.Emails.send({
-        "from": "GOJO HOUSE <onboarding@resend.dev>",
-        "to": email,
-        "subject": "Your Verification Code",
-        "html": f"""
-            <h2>Verification Code</h2>
-            <p>Your OTP code is:</p>
-            <h1 style="letter-spacing: 8px; color: #4F46E5;">{code}</h1>
-            <p>This code expires in <strong>5 minutes</strong>.</p>
-            <p>If you didn't request this, ignore this email.</p>
-        """
-    })
+# --- ROUTES ---
 
 @auth_bp.route('/login')
 def login():
     return render_template('auth/login.html')
 
+@auth_bp.route('/blocked')
+def blocked():
+    return render_template('auth/blocked.html')
 
-# @auth_bp.route('/login/submit', methods=['POST'])
-# def login_post():
-#     email = request.form.get('email')
-#     password = request.form.get('password')
-#     supabase = get_supabase()
+@auth_bp.route('/login/submit', methods=['POST'])
+@limiter.limit("5 per minute")
+def login_post():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
 
-#     try:
-#         # Siguraduhin na malinis ang session
-#         supabase.auth.sign_out()
+    if not email or not password:
+        flash("Email and Password are required.")
+        return redirect(url_for('auth.login'))
 
-#         # I-verify ang Password
-#         auth_response = supabase.auth.sign_in_with_password({
-#             "email": email,
-#             "password": password
-#         })
-        
-#         user = auth_response.user
+    # 1. Check kung blocked na sa MySQL
+    cursor.execute("SELECT attempts, is_blocked FROM login_attempts WHERE email = %s", (email,))
+    attempt_record = cursor.fetchone()
 
-#         # Kunin ang Role mula sa profiles table
-#         profile_res = supabase.table('profiles').select('role').eq('id', user.id).single().execute()
-#         user_role = profile_res.data['role']
+    if attempt_record and attempt_record['is_blocked']:
+        return redirect(url_for('auth.blocked'))
 
-#         # I-save na ang lahat sa Session 
-#         session['user_id'] = user.id
-#         session['user_email'] = user.email
-#         session['role'] = user_role
+    try:
+        # 2. Hanapin ang user sa 'users' table (Dapat may table ka na 'users' o 'profiles')
+        cursor.execute("SELECT id, email, password_hash, role FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
 
-#         # Mag-insert ng Audit Log para sa successful login
-#         supabase.table('audit_logs').insert({
-#             "user_id": user.id,
-#             "user_email": user.email,
-#             "action": "LOGIN_BYPASS_MFA",
-#             "module": "AUTHENTICATION",
-#             "ip_address": request.remote_addr
-#         }).execute()
+        # 3. Verify Password using Werkzeug
+        if user and check_password_hash(user['password_hash'], password):
+            # SUCCESS: Reset attempts
+            cursor.execute("UPDATE login_attempts SET attempts = 0, is_blocked = 0 WHERE email = %s", (email,))
+            db.commit()
 
-#         # Redirect base sa role
-#         if user_role == 'super_admin':
-#             return redirect(url_for('admin.dashboard'))
-#         elif user_role == 'waiter':
-#             return redirect(url_for('pos.waiter_dashboard'))
-#         else:
-#             return redirect(url_for('customer.index'))
+            # 4. Generate at Save OTP sa MySQL
+            code = str(random.randint(100000, 999999))
+            expires_at = datetime.now() + timedelta(minutes=5)
 
-#     except Exception as e:
-#         print(f"Login Error: {e}")
-#         flash(f"Login failed: {str(e)}")
-#         return redirect(url_for('auth.login'))
+            cursor.execute("DELETE FROM otp_codes WHERE email = %s", (email,))
+            cursor.execute("INSERT INTO otp_codes (email, code, expires_at, used) VALUES (%s, %s, %s, 0)", 
+                           (email, code, expires_at))
+            db.commit()
+
+            # 5. Ipadala ang OTP email
+            if send_otp_email(email, code):
+                session['temp_email'] = email
+                session['temp_user_id'] = user['id']
+                flash("Verification code sent to your email.")
+                return redirect(url_for('auth.verify_otp'))
+            else:
+                flash("Failed to send email.")
+                return redirect(url_for('auth.login'))
+
+        else:
+            # 6. FAIL: Increment attempts sa MySQL
+            new_count = (attempt_record['attempts'] + 1) if attempt_record else 1
+            blocked_status = 1 if new_count >= MAX_ATTEMPTS else 0
+            
+            if attempt_record:
+                cursor.execute("UPDATE login_attempts SET attempts = %s, is_blocked = %s WHERE email = %s", 
+                               (new_count, blocked_status, email))
+            else:
+                cursor.execute("INSERT INTO login_attempts (email, attempts, is_blocked) VALUES (%s, %s, %s)", 
+                               (email, new_count, blocked_status))
+            
+            db.commit()
+            
+            if blocked_status:
+                # Audit Log sa MySQL
+                cursor.execute("INSERT INTO audit_logs (user_email, action, module, ip_address) VALUES (%s, %s, %s, %s)",
+                               (email, 'ACCOUNT_BLOCKED', 'AUTHENTICATION', request.remote_addr))
+                db.commit()
+                return redirect(url_for('auth.blocked'))
+            
+            flash(f"Invalid credentials. {MAX_ATTEMPTS - new_count} attempt(s) remaining.")
+            return redirect(url_for('auth.login'))
+
+    except Exception as e:
+        print(f"Login Error: {e}")
+        flash("An error occurred during login.")
+        return redirect(url_for('auth.login'))
+    finally:
+        cursor.close()
+        db.close()
 
 @auth_bp.route('/verify-otp')
 def verify_otp():
@@ -91,141 +140,132 @@ def verify_otp():
         return redirect(url_for('auth.login'))
     return render_template('auth/verify.html')
 
-
-@auth_bp.route('/login/submit', methods=['POST'])
-def login_post():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    supabase = get_supabase()
-
-
-    if not email:
-        flash("email should not be empty", "error")
-        return redirect(url_for('auth.login'))
-    
-    if not password:
-        flash("Password should not empty")
-        return redirect(url_for('auth.log'))
-    
-    
-
-    try:
-        # Verify password
-        auth_response = supabase.auth.sign_in_with_password({
-            "email": email,
-            "password": password
-        })
-
-        # save ang user info bago mag sign_out
-        user_id = auth_response.user.id
-        user_email = auth_response.user.email
-
-        # Sign out agad 
-        supabase.auth.sign_out()
-
-        # Generate OTP
-        code = str(random.randint(100000, 999999))
-        expires_at = datetime.now(timezone.utc) + timedelta(minutes=5)
-
-        supabase.table('otp_codes').delete().eq('email', email).execute()
-        supabase.table('otp_codes').insert({
-            "email": email,
-            "code": code,
-            "expires_at": expires_at.isoformat(),
-            "used": False
-        }).execute()
-
-        send_otp_email(email, code)
-
-        # user_id  ang i-save hindi token
-        session['temp_email'] = email
-        session['temp_user_id'] = user_id
-
-        flash("A verification code has been sent to your email.")
-        return redirect(url_for('auth.verify_otp'))
-
-    except Exception as e:
-        print(f"Login Error: {e}")
-        flash("Invalid email or password.")
-        return redirect(url_for('auth.login'))
-
-
 @auth_bp.route('/verify-otp/submit', methods=['POST'])
 def verify_otp_submit():
     otp_code = request.form.get('otp_code')
     email = session.get('temp_email')
-    user_id = session.get('temp_user_id')  # user_id
-    supabase = get_supabase()
+    user_id = session.get('temp_user_id')
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
 
     try:
-        now = datetime.now(timezone.utc)
+        # Check OTP sa MySQL
+        cursor.execute("SELECT id, expires_at FROM otp_codes WHERE email = %s AND code = %s AND used = 0", 
+                       (email, otp_code))
+        otp_record = cursor.fetchone()
 
-        # I-check ang OTP sa database
-        result = (
-            supabase.table('otp_codes')
-            .select('*')
-            .eq('email', email)
-            .eq('code', otp_code)
-            .eq('used', False)
-            .execute()
-        )
+        if not otp_record:
+            flash("Invalid OTP code.")
+            return redirect(url_for('auth.verify_otp'))
 
-        if not result.data:
-            raise Exception("Invalid OTP code")
+        if datetime.now() > otp_record['expires_at']:
+            flash("OTP has expired.")
+            return redirect(url_for('auth.verify_otp'))
 
-        otp_record = result.data[0]
+        # Mark OTP as used
+        cursor.execute("UPDATE otp_codes SET used = 1 WHERE id = %s", (otp_record['id'],))
 
-        # I-check kung expired
-        expires_at = datetime.fromisoformat(otp_record['expires_at'])
-        if now > expires_at:
-            raise Exception("OTP has expired")
+        send_login_notification(email, request.remote_addr)
+        
+        # Kunin ang Role ng user
+        cursor.execute("SELECT role FROM users WHERE id = %s", (user_id,))
+        user_role = cursor.fetchone()['role']
 
-        # Mark as used
-        supabase.table('otp_codes').update({"used": True}).eq('id', otp_record['id']).execute()
-
-        # Gamitin ang service role key para makuha ang user info
-        profile_res = (
-            supabase.table('profiles')
-            .select('role')
-            .eq('id', user_id)
-            .single()
-            .execute()
-        )
-        user_role = profile_res.data['role']
-
-        # I-save sa session gamit ang naka-store na user_id
+        # Set Full Session
         session.clear()
         session['user_id'] = user_id
         session['user_email'] = email
         session['role'] = user_role
 
-        supabase.table('audit_logs').insert({
-            "user_id": user_id,
-            "user_email": email,
-            "action": "MFA_LOGIN_SUCCESS",
-            "module": "AUTHENTICATION",
-            "ip_address": request.remote_addr
-        }).execute()
+        # Audit Log success
+        cursor.execute("INSERT INTO audit_logs (user_id, user_email, action, module, ip_address) VALUES (%s, %s, %s, %s, %s)",
+                       (user_id, email, 'MFA_LOGIN_SUCCESS', 'AUTHENTICATION', request.remote_addr))
+        db.commit()
 
-        if user_role == 'super_admin':
-            return redirect(url_for('admin.dashboard'))
-        elif user_role == 'waiter':
-            return redirect(url_for('pos.waiter_dashboard'))
-        else:
-            return redirect(url_for('customer.index'))
+        # Redirects (Same as your previous logic)
+        role_redirects = {
+            'super_admin': 'admin.dashboard',
+            'manager': 'manager.dashboard',
+            'front_desk': 'front_desk.dashboard',
+            'cashier': 'cashier.dashboard',
+            'staff': 'inventory.dashboard',
+            'kitchen': 'kitchen.dashboard'
+        }
+        return redirect(url_for(role_redirects.get(user_role, 'customer.index')))
 
     except Exception as e:
         print(f"OTP Error: {e}")
-        flash("Invalid or expired verification code.")
+        flash("Verification failed.")
         return redirect(url_for('auth.verify_otp'))
+    finally:
+        cursor.close()
+        db.close()
     
+# --- LOGIN NOTIFICATION EMAIL ---
+def send_login_notification(receiver_email, ip_address):
+    sender_email = "chrmasong@gmail.com"
+    app_password = "stbu vkhx otzj fbdd" 
+
+    now = datetime.now(timezone.utc).strftime("%B %d, %Y at %I:%M %p UTC")
+
+    message = MIMEMultipart()
+    message["From"] = f"Gojo House <{sender_email}>"
+    message["To"] = receiver_email
+    message["Subject"] = "New Login Detected – Gojo House"
+
+    body = f"""
+    <html>
+        <body style="font-family: sans-serif; background-color: #000; color: #fff; padding: 20px;">
+            <div style="border: 1px solid #333; padding: 40px; border-radius: 20px; max-width: 480px; margin: auto;">
+                <h1 style="color: #00f2ff; letter-spacing: 5px; font-size: 20px;">GOJO HOUSE</h1>
+                <p style="color: #aaa; font-size: 13px;">A successful login was detected on your account.</p>
+
+                <div style="background: #111; border: 1px solid #222; border-radius: 12px; padding: 20px; margin: 24px 0;">
+                    <table style="width: 100%; font-size: 12px; color: #ccc; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 8px 0; color: #555; text-transform: uppercase; letter-spacing: 2px; width: 40%;">Time</td>
+                            <td style="padding: 8px 0;">{now}</td>
+                        </tr>
+                        <tr style="border-top: 1px solid #1a1a1a;">
+                            <td style="padding: 8px 0; color: #555; text-transform: uppercase; letter-spacing: 2px;">IP Address</td>
+                            <td style="padding: 8px 0;">{ip_address}</td>
+                        </tr>
+                        <tr style="border-top: 1px solid #1a1a1a;">
+                            <td style="padding: 8px 0; color: #555; text-transform: uppercase; letter-spacing: 2px;">Account</td>
+                            <td style="padding: 8px 0;">{receiver_email}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <p style="color: #aaa; font-size: 12px; line-height: 1.8;">
+                    If this was you, no action is needed.<br>
+                    If you did <strong style="color: #ff4444;">NOT</strong> perform this login,
+                    please contact your administrator immediately.
+                </p>
+
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #1a1a1a;">
+                    <p style="color: #333; font-size: 10px; text-transform: uppercase; letter-spacing: 3px; margin: 0;">
+                        Gojo House Security System - Automated Alert
+                    </p>
+                </div>
+            </div>
+        </body>
+    </html>
+    """
+    message.attach(MIMEText(body, "html", "utf-8"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, app_password)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+        print(f"Login notification sent to {receiver_email}")
+        return True
+    except Exception as e:
+        print(f"Login Notification SMTP ERROR: {e}")
+        return False 
+
 @auth_bp.route('/logout')
 def logout():
-    supabase = get_supabase()
-    try:
-        supabase.auth.sign_out()
-    except:
-        pass
     session.clear()
-    flash("You have been logged out.")
+    flash("Logged out successfully.")
     return redirect(url_for('auth.login'))

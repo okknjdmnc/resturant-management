@@ -1,0 +1,98 @@
+{% extends "inventory/inventory_base.html" %}
+
+{% block content %}
+<div class="p-8 max-w-[1400px] mx-auto">
+    <div class="flex flex-col mb-10">
+        <h1 class="text-4xl font-black text-white italic uppercase tracking-tighter mb-2 italic">Reconciliation Hub</h1>
+        <p class="text-zinc-500 text-xs font-bold uppercase tracking-[0.3em]">Kitchen to Main Warehouse Transfer (EOD)</p>
+    </div>
+
+    <div class="bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden backdrop-blur-xl shadow-2xl">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-white/5 bg-white/[0.02]">
+                    <th class="p-8">Item Profile</th>
+                    <th class="p-8 text-center bg-indigo-500/5">Main Warehouse</th>
+                    <th class="p-8 text-center bg-amber-500/5 text-amber-500/70">Kitchen (Est. Out)</th>
+                    <th class="p-8">Return Amount</th>
+                    <th class="p-8 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+                {% for item in items %}
+                <tr class="group hover:bg-white/[0.01] transition-all">
+                    <td class="p-8">
+                        <span class="text-sm font-black text-white uppercase tracking-tight">{{ item.item_name }}</span>
+                        <span class="block text-[8px] text-zinc-600 font-bold uppercase mt-1">{{ item.unit }}</span>
+                    </td>
+                    
+                    <td class="p-8 text-center bg-indigo-500/[0.02]">
+                        <span class="text-xl font-black text-indigo-400 italic">{{ item.current_stock }}</span>
+                    </td>
+                    
+                    <td class="p-8 text-center bg-amber-500/[0.02]">
+                        <span class="text-lg font-black text-amber-500 italic">
+                            {{ kitchen_balances.get(item.id, 0) }}
+                        </span>
+                    </td>
+                    
+                    <td class="p-8">
+                        <input type="number" id="qty_{{ item.id }}" step="0.1" 
+                            max="{{ kitchen_balances.get(item.id, 0) }}" 
+                            placeholder="Qty to return..." 
+                            class="w-40 bg-black border border-white/10 rounded-xl px-4 py-3 text-white font-black text-sm outline-none focus:border-emerald-500 transition-all">
+                    </td>
+                    
+                    <td class="p-8 text-right">
+                        <button onclick="handleReturn('{{ item.id }}', '{{ item.item_name }}')" 
+                                class="bg-emerald-600 hover:bg-white hover:text-black text-white px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">
+                            Return to Main
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function handleReturn(itemId, itemName) {
+    const qty = document.getElementById('qty_' + itemId).value;
+    
+    if (!qty || qty <= 0) {
+        Swal.fire({ icon: 'error', title: 'Invalid Quantity', background: '#18181b', color: '#fff' });
+        return;
+    }
+
+    Swal.fire({
+        title: 'CONFIRM RECONCILIATION?',
+        html: `<div class="text-[10px] text-zinc-500 font-bold uppercase mb-4 tracking-widest text-center">Transferring from Kitchen to Warehouse</div>
+               <div class="text-xl font-black text-emerald-400 uppercase italic">${qty} UNITS - ${itemName}</div>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981', // emerald-600
+        confirmButtonText: 'CONFIRM RETURN',
+        background: '#18181b',
+        color: '#fff',
+        customClass: { popup: 'rounded-[2rem] border border-white/5' }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Gumawa ng form data at i-submit via POST
+            const formData = new FormData();
+            formData.append('item_id', itemId);
+            formData.append('return_qty', qty);
+
+            fetch("{{ url_for('inventory.process_return') }}", {
+                method: 'POST',
+                body: formData
+            }).then(() => {
+                Swal.fire({ title: 'Success', icon: 'success', background: '#18181b', color: '#fff' })
+                .then(() => location.reload());
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

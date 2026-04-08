@@ -1,0 +1,216 @@
+{% extends "front_desk/front_desk_base.html" %}
+{% block front_desk_content %}
+<div class="min-h-screen bg-[#0b0c0d] p-4 lg:p-8 text-gray-100 font-['Plus_Jakarta_Sans']">
+    
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+        <div>
+            <div class="flex items-center gap-3 mb-1">
+                <span class="h-2 w-8 bg-yellow-500 rounded-full"></span>
+                <h1 class="text-3xl font-black uppercase tracking-tighter text-white italic">Front-Desk <span class="text-yellow-500">Live Map</span></h1>
+            </div>
+            <p class="text-[10px] text-gray-500 uppercase tracking-[0.4em] font-bold ml-11">Novaliches Branch • Real-time Terminal</p>
+        </div>
+        
+        <div class="flex items-center gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/5 shadow-2xl">
+            <div class="flex items-center gap-2 px-4 py-2 bg-zinc-900/50 rounded-xl border border-emerald-500/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></span>
+                <span class="text-[9px] font-black uppercase tracking-widest text-emerald-500">Available</span>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 bg-zinc-900/50 rounded-xl border border-red-500/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_#ef4444]"></span>
+                <span class="text-[9px] font-black uppercase tracking-widest text-red-500">Occupied</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6">
+                {% for table in tables %}
+                <div class="relative group aspect-square rounded-[2.5rem] border-2 transition-all duration-500 overflow-hidden flex flex-col items-center justify-center
+                    {{ 'bg-emerald-500/[0.02] border-emerald-500/10 hover:border-emerald-500/50 hover:bg-emerald-500/[0.05]' if table.status == 'available' else 'bg-red-500/[0.02] border-red-500/10 hover:border-red-500/50 hover:bg-red-500/[0.05]' }}">
+                    
+                    <div class="text-center z-10 transition-transform group-hover:scale-110 duration-500">
+                        <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-1">Table</p>
+                        <h3 class="text-5xl font-black italic tracking-tighter {{ 'text-emerald-500' if table.status == 'available' else 'text-red-500' }}">
+                            {{ table.table_number }}
+                        </h3>
+                        <div class="mt-2 inline-block px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-[8px] font-bold text-gray-500 uppercase italic">
+                            {{ table.capacity }} Pax Max
+                        </div>
+                    </div>
+
+                    <div class="absolute inset-0 flex flex-col items-center justify-end p-4 opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
+                        {% if table.status == 'available' %}
+                        <button onclick="openCheckInModal('{{ table.table_number }}', '0')" 
+                                class="w-full py-3 bg-emerald-500 text-black font-black text-[10px] uppercase rounded-2xl shadow-xl shadow-emerald-500/20 active:scale-95 transition-all">
+                            Check-In Guest
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('front_desk.checkout_table', table_no=table.table_number, res_id=0) }}" 
+                           class="w-full py-3 bg-white text-black font-black text-[10px] uppercase rounded-2xl text-center active:scale-95 transition-all">
+                            Release Table
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="lg:col-span-4 space-y-8">
+            <section class="bg-zinc-900/30 border border-white/5 rounded-[2.5rem] p-6 backdrop-blur-sm">
+                <div class="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                    <h2 class="text-[11px] font-black uppercase tracking-[0.3em] text-yellow-500 italic">Guest Arrivals</h2>
+                    <span class="text-[9px] bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded-lg font-bold">{{ reservations|length }} Pending</span>
+                </div>
+                
+                <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+                    {% for res in reservations %}
+                    <div class="group p-4 rounded-[1.5rem] bg-white/[0.02] border border-white/5 hover:border-yellow-500/30 transition-all">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="text-sm font-black text-white uppercase italic tracking-tight">{{ res.customer_name }}</h4>
+                                <p class="text-[9px] font-bold text-gray-600 uppercase">{{ res.tier or 'Standard Buffet' }}</p>
+                            </div>
+                            <span class="text-[10px] bg-zinc-800 text-yellow-500 px-3 py-1 rounded-xl font-black border border-yellow-500/10 tracking-tighter">
+                                T-{{ res.table_number }}
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center gap-4 text-[9px] font-mono text-gray-500 mb-4 uppercase">
+                            <span>🕒 {{ res.reservation_time }}</span>
+                            <span>👥 {{ res.pax }} Pax</span>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="openCheckInModal('{{ res.table_number }}', '{{ res.id }}')" 
+                                    class="flex-1 text-center py-2.5 bg-emerald-500 text-black rounded-xl text-[9px] font-black uppercase hover:bg-emerald-400 transition-all">
+                                Seat Guest
+                            </button>
+                            <a href="{{ url_for('front_desk.view_slip', res_id=res.id) }}" target="_blank"
+                               class="px-4 py-2.5 bg-white/5 text-gray-400 hover:text-white rounded-xl text-[9px] font-black uppercase border border-white/5 transition-all">
+                                Slip
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="py-10 text-center border border-dashed border-white/5 rounded-3xl">
+                        <p class="text-[9px] font-black text-gray-700 uppercase tracking-widest italic">Waiting for arrivals...</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<div id="checkInModal" class="fixed inset-0 bg-black/90 backdrop-blur-xl hidden z-[100] flex items-center justify-center p-4">
+    <div class="bg-[#0c0c0e] border border-white/10 p-10 rounded-[3rem] w-full max-w-md shadow-[0_0_100px_rgba(16,185,129,0.1)] relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500 blur-[80px] opacity-10"></div>
+        
+        <div class="relative z-10 mb-8 border-b border-white/5 pb-6">
+            <h2 id="modalTableName" class="text-4xl font-black text-white italic uppercase tracking-tighter">Table Entry</h2>
+            <p class="text-[10px] text-emerald-500 uppercase font-black tracking-widest mt-2">Gojo House Terminal • Novaliches</p>
+        </div>
+
+        <div class="relative z-10 bg-white/[0.03] border border-white/5 rounded-3xl p-5 mb-8 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Customer Name</p>
+                    <p id="displayFullName" class="text-xs font-black text-white uppercase italic">---</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Pax Count</p>
+                    <p id="displayPax" class="text-xs font-black text-emerald-500 italic">0 Pax</p>
+                </div>
+            </div>
+            <div>
+                <p class="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Active Package</p>
+                <p id="displayPackage" class="text-xs font-black text-yellow-500 uppercase italic">---</p>
+            </div>
+        </div>
+        
+        <form id="checkInForm" action="" method="POST" class="space-y-6 relative z-10">
+            <input type="hidden" name="table_no" id="inputTableNo">
+            <input type="hidden" name="res_id" id="inputResId">
+
+            <div id="tierSelectionSection" class="space-y-2">
+                <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Select Dining Tier</label>
+                <select name="menu_level" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-xs font-bold outline-none focus:border-emerald-500 transition-all appearance-none cursor-pointer">
+                    <option value="standard">Standard Buffet</option>
+                    <option value="premium">Premium Buffet</option>
+                    <option value="unlimited-gold">Unlimited Gold</option>
+                </select>
+            </div>
+            
+            <div class="flex gap-3">
+                <button type="button" onclick="closeModal()" class="flex-1 py-4 bg-white/5 text-gray-500 font-black rounded-2xl text-[9px] uppercase hover:text-white transition-all">Cancel</button>
+                
+                <button type="submit" class="flex-[2] bg-emerald-500 hover:bg-emerald-400 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-emerald-500/20 uppercase italic text-xs tracking-widest">
+                    Confirm & Seat
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    async function openCheckInModal(tableNo, resId) {
+    const modal = document.getElementById('checkInModal');
+    const tierSection = document.getElementById('tierSelectionSection');
+    
+    // Initial loading state
+    document.getElementById('modalTableName').innerText = "Table " + tableNo + " Entry";
+    document.getElementById('displayFullName').innerText = "Loading...";
+    document.getElementById('displayPax').innerText = "...";
+    document.getElementById('displayPackage').innerText = "...";
+
+    document.getElementById('inputTableNo').value = tableNo;
+    document.getElementById('inputResId').value = resId;
+    document.getElementById('checkInForm').action = `/front_desk/arrive/${tableNo}/${resId}`;
+
+    if (resId !== '0' && resId !== 0) {
+        try {
+            const response = await fetch(`/front_desk/get_reservation/${resId}`);
+            const data = await response.json();
+
+            if (data && !data.error) {
+                // Eto ang mahalaga: dapat match sa 'AS' sa Python
+                document.getElementById('displayFullName').innerText = data.name || "No Name Found";
+                document.getElementById('displayPax').innerText = (data.pax || "0") + " Pax";
+                document.getElementById('displayPackage').innerText = data.tier || "Standard Buffet";
+                
+                tierSection.classList.add('hidden');
+            }
+        } catch (err) {
+            console.error("Fetch error:", err);
+            document.getElementById('displayFullName').innerText = "Error Loading Data";
+        }
+    } else {
+        // Walk-in Guest logic
+        document.getElementById('displayFullName').innerText = "Walk-in Guest";
+        document.getElementById('displayPax').innerText = "N/A";
+        document.getElementById('displayPackage').innerText = "Select Package Below";
+        tierSection.classList.remove('hidden');
+    }
+
+    modal.classList.remove('hidden');
+}
+
+    function closeModal() {
+        document.getElementById('checkInModal').classList.add('hidden');
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('checkInModal');
+        if (event.target == modal) closeModal();
+    }
+</script>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+</style>
+{% endblock %}

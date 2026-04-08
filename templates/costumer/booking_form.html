@@ -14,7 +14,8 @@
         </div>
     </div>
 
-    <form action="{{ url_for('customer.submit_reservation') }}" method="POST" class="space-y-6">
+    <form action="{{ url_for('customer.submit_reservation') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
+      <input type="hidden" name="num_guests" value="{{ pax }}"> 
       <input type="hidden" name="tier" value="{{ tier }}">
       <input type="hidden" name="table_number" value="{{ table_id }}">
       <div class="grid md:grid-cols-2 gap-6">
@@ -25,6 +26,16 @@
         <div class="space-y-2">
           <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Phone Number</label>
           <input type="tel" placeholder="0912 345 6789" name="phone_number" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Email</label>
+          <input type="email" placeholder="Email" name="email" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Address</label>
+          <input type="text" placeholder="Address" name="address" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
         </div>
       </div>
 
@@ -44,6 +55,38 @@
             <option value="08:00 PM" class="bg-[#1a1a1a] text-white">08:00 PM</option>
           </select>
         </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+    
+          <div class="flex flex-col">
+              <label class="text-xs uppercase tracking-widest text-gray-500 mb-2">Upload Valid ID for Verification</label>
+              <input type="file" name="id_image" accept="image/*" required
+                    class="bg-[#1a1d21] border border-gray-800 p-3 rounded-lg text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-yellow-500 file:text-black hover:file:bg-yellow-600">
+          </div>
+
+          <div class="flex flex-col">
+              <label class="text-xs uppercase tracking-widest text-gray-500 mb-2">Payment Method (Downpayment)</label>
+              <select name="payment_method" required
+                      class="bg-[#1a1d21] border border-gray-800 p-4 rounded-lg text-white focus:outline-none focus:border-yellow-500">
+                  <option value="" disabled selected>Select Payment Method</option>
+                  <option value="GCash">GCash</option>
+                  <option value="Maya">Maya</option>
+                  <option value="Bank Transfer">Bank Transfer (BDO/BPI)</option>
+              </select>
+          </div>
+
+          <div class="md:col-span-2 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+              <p class="text-xs text-yellow-500 font-medium">
+                  💡 Note: A downpayment of ₱500 is required to secure your reservation. Please settle via chosen method and upload the screenshot of the receipt.
+              </p>
+          </div>
+
+          <div class="md:col-span-2 flex flex-col">
+              <label class="text-xs uppercase tracking-widest text-gray-500 mb-2">Upload Payment Receipt / Screenshot</label>
+              <input type="file" name="receipt_image" accept="image/*" required
+                    class="bg-[#1a1d21] border border-gray-800 p-3 rounded-lg text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-yellow-500 file:text-black hover:file:bg-yellow-600">
+          </div>
       </div>
 
       <div class="space-y-2 text-center pt-8">

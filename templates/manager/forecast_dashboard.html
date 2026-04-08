@@ -1,0 +1,185 @@
+{% extends "manager/manager_base.html" %}
+{% block  manager_content %}
+
+<div class="p-8 bg-black min-h-screen text-zinc-300 font-sans">
+    <div class="text-right flex flex-col items-end gap-3">
+                <a href="{{ url_for('manager.export_forecast_csv') }}" 
+                class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-white/5 rounded-xl transition-all group">
+                    <i class="fa-solid fa-file-export text-indigo-400 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-white">Export CSV</span>
+                </a>
+                
+            </div>
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                <div class="h-1 w-12 bg-indigo-500 rounded-full"></div>
+                <span class="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-400">Neural Network Active</span>
+            </div>
+            <h1 class="text-6xl font-black italic tracking-tighter uppercase text-white">
+                Sales <span class="text-indigo-500">Forecasting</span>
+            </h1>
+            <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mt-2">
+                Predictive Analytics & Revenue Projection Model
+            </p>
+        </div>
+        <div class="text-right hidden md:block">
+            <p class="text-[9px] font-black text-zinc-600 uppercase">System Time</p>
+            <p class="text-xs font-mono font-bold text-white">{{ today }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div class="bg-zinc-900/50 border border-white/5 p-6 rounded-[2.5rem] backdrop-blur-sm group hover:border-indigo-500/30 transition-all">
+            <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Base Daily Avg</p>
+            <h3 id="avg-daily" class="text-3xl font-black italic text-white mt-2">₱0.00</h3>
+            <div class="mt-4 flex items-center gap-2">
+                <span class="text-[8px] font-bold px-2 py-0.5 bg-emerald-500/10 text-emerald-500 rounded-full uppercase">Stable</span>
+            </div>
+        </div>
+
+        <div class="bg-zinc-900/50 border border-white/5 p-6 rounded-[2.5rem] backdrop-blur-sm group hover:border-emerald-500/30 transition-all">
+            <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest text-emerald-500">Predicted Week Revenue</p>
+            <h3 id="forecast-total" class="text-3xl font-black italic text-white mt-2">₱0.00</h3>
+            <p class="text-[8px] font-bold text-zinc-600 uppercase mt-2 italic">+ Weighted Weekend Boost</p>
+        </div>
+
+        <div class="bg-zinc-900/50 border border-white/5 p-6 rounded-[2.5rem] backdrop-blur-sm">
+            <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Historical Total</p>
+            <h3 id="total-actual" class="text-3xl font-black italic text-white mt-2">₱0.00</h3>
+            <p class="text-[8px] font-bold text-indigo-500 uppercase mt-2">Verified Transactions</p>
+        </div>
+
+        <div class="bg-indigo-600 p-6 rounded-[2.5rem] shadow-2xl shadow-indigo-900/40 flex flex-col justify-between">
+            <div class="flex justify-between items-start">
+                <i class="fa-solid fa-brain text-white/50 text-xl"></i>
+                <span class="text-[8px] font-black bg-black/20 px-2 py-1 rounded-lg uppercase">v2.0-Alpha</span>
+            </div>
+            <div>
+                <p class="text-[9px] font-black text-indigo-200 uppercase tracking-widest leading-none">Status</p>
+                <h3 class="text-xl font-black italic text-white uppercase tracking-tighter">Algorithm Optimal</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-zinc-900/80 border border-white/5 p-8 rounded-[3rem] shadow-2xl">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xs font-black uppercase tracking-[0.2em] text-white italic">Revenue Trend & Projection</h2>
+                <div class="flex gap-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
+                        <span class="text-[8px] font-bold uppercase text-zinc-500">Actual</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 border border-dashed border-emerald-500"></div>
+                        <span class="text-[8px] font-bold uppercase text-zinc-500">AI Forecast</span>
+                    </div>
+                </div>
+            </div>
+            <div class="h-[400px]">
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-zinc-900/30 border border-white/5 p-8 rounded-[3rem] backdrop-blur-md">
+            <h2 class="text-xs font-black uppercase tracking-[0.2em] text-white italic mb-8 border-b border-white/5 pb-4">Top Performers</h2>
+            <div id="cashier-list" class="space-y-6">
+                <p class="text-[10px] text-zinc-600 animate-pulse italic uppercase tracking-widest">Syncing performance data...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Fetch Forecast Data
+    fetch('/api/forecast/data')
+        .then(res => res.json())
+        .then(data => {
+            if(data.error) return;
+
+            // Update Cards
+            document.getElementById('avg-daily').innerText = '₱' + data.avg_daily.toLocaleString();
+            document.getElementById('forecast-total').innerText = '₱' + data.forecast_total.toLocaleString();
+            document.getElementById('total-actual').innerText = '₱' + data.total_actual.toLocaleString();
+
+            // Setup Chart
+            const ctx = document.getElementById('forecastChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [...data.actual_dates, ...data.forecast_dates],
+                    datasets: [
+                        {
+                            label: 'Actual Revenue',
+                            data: data.actual_amounts,
+                            borderColor: '#6366f1',
+                            borderWidth: 4,
+                            pointBackgroundColor: '#6366f1',
+                            pointRadius: 4,
+                            fill: true,
+                            backgroundColor: gradient,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'AI Projection',
+                            data: [...Array(data.actual_amounts.length - 1).fill(null), data.actual_amounts[data.actual_amounts.length-1], ...data.forecast_amounts],
+                            borderColor: '#10b981',
+                            borderWidth: 2,
+                            borderDash: [10, 5],
+                            pointRadius: 0,
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.03)' },
+                            ticks: { color: '#52525b', font: { family: 'monospace', size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#52525b', font: { family: 'monospace', size: 9 } }
+                        }
+                    }
+                }
+            });
+        });
+
+    // 2. Fetch Cashier Performance
+    fetch('/api/forecast/cashiers')
+        .then(res => res.json())
+        .then(cashiers => {
+            const list = document.getElementById('cashier-list');
+            list.innerHTML = '';
+            cashiers.forEach((c, index) => {
+                const rank = index + 1;
+                list.innerHTML += `
+                    <div class="flex justify-between items-center group">
+                        <div class="flex items-center gap-4">
+                            <span class="text-[10px] font-black text-zinc-700 italic">0${rank}</span>
+                            <div>
+                                <p class="text-[11px] font-black text-white uppercase group-hover:text-indigo-400 transition-colors">${c.name}</p>
+                                <p class="text-[8px] font-bold text-zinc-600 uppercase">${c.count} Transactions</p>
+                            </div>
+                        </div>
+                        <p class="text-xs font-mono font-black text-zinc-400 italic">₱${c.total.toLocaleString()}</p>
+                    </div>
+                `;
+            });
+        });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,227 @@
+{% extends "manager/manager_base.html" %}
+{% block manager_content %}
+<div class="min-h-screen bg-[#0f1113] text-gray-100 p-6 font-sans">
+    
+    <div class="mb-8 flex justify-between items-end border-b border-gray-800 pb-6">
+        <div>
+            <h1 class="text-3xl font-black text-white tracking-tighter uppercase">Inventory <span class="text-blue-500">Logistics</span></h1>
+            <p class="text-gray-500 font-mono text-xs mt-1 italic uppercase tracking-widest">Stock Monitoring & Supply Chain Terminal</p>
+        </div>
+        <div class="text-right">
+            <span class="text-[10px] text-gray-600 uppercase font-black tracking-[0.2em]">Local Server Time</span>
+            <div class="text-xl font-mono font-bold text-blue-400">2026-03-24 20:22:37</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-[#1a1d21] border border-gray-800 p-4 rounded-xl shadow-lg">
+            <span class="text-[10px] text-gray-500 font-black uppercase">Total Items</span>
+            <div class="text-2xl font-black text-white">18 <span class="text-xs text-gray-600 uppercase font-mono">Types</span></div>
+        </div>
+        
+        <div class="bg-blue-900/10 border border-blue-500/20 p-4 rounded-xl shadow-lg relative overflow-hidden">
+            <div class="absolute -right-2 -top-2 text-blue-500/10 text-5xl">🚚</div>
+            <span class="text-[10px] text-blue-400 font-black uppercase tracking-widest">Kitchen Requisition (Today)</span>
+            <div class="text-2xl font-black text-white italic">
+                {{ today_total_transfers or '0.00' }} <span class="text-[10px] text-gray-500 font-normal">EST. TOTAL</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1a1d21] border border-gray-800 p-4 rounded-xl shadow-lg border-l-4 border-l-blue-500">
+            <span class="text-[10px] text-gray-500 font-black uppercase text-blue-400">Primary Supply</span>
+            <div class="text-2xl font-black text-white">Meat & Seafood</div>
+        </div>
+        <div class="bg-[#1a1d21] border border-gray-800 p-4 rounded-xl shadow-lg border-l-4 border-l-emerald-500">
+            <span class="text-[10px] text-gray-500 font-black uppercase text-emerald-500">System Status</span>
+            <div class="text-2xl font-black text-emerald-500">Active Ops</div>
+        </div>
+    </div>
+
+    <div class="bg-[#1a1d21] rounded-2xl border border-gray-800 overflow-hidden shadow-2xl">
+        <table class="w-full text-left">
+            <thead class="bg-[#24282d] border-b border-gray-800">
+                <tr>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase">#</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase">Item Description</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase text-center">Category</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase text-right">Quantity</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase text-center">Unit</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase text-center">Status</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-blue-400 uppercase text-center bg-blue-500/5">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for item in inventory %}
+                <tr class="hover:bg-white/[0.02] transition-all group">
+                    <td class="px-6 py-4 text-xs font-mono text-gray-600">#{{ "%03d" | format(item.id) }}</td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-bold text-white uppercase tracking-tight group-hover:text-blue-400 transition-colors">{{ item.item_name }}</div>
+                        <div class="text-[9px] text-gray-600 font-mono italic">{{ item.last_updated }}</div>
+                    </td>
+                    
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase border 
+                            {{ 'bg-red-500/10 text-red-400 border-red-500/20' if item.category == 'Meat' else 
+                               'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' if item.category == 'Seafood' else 
+                               'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' if item.category == 'Vegetables' else
+                               'bg-blue-500/10 text-blue-400 border-blue-500/20' if item.category == 'Drinks' else
+                               'bg-purple-500/10 text-purple-400 border-purple-500/20' if item.category == 'Supplies' else
+                               'bg-gray-500/10 text-gray-400 border-gray-500/20' }}">
+                            {{ item.category }}
+                        </span>
+                    </td>
+
+                    <td class="px-6 py-4 text-right">
+                        <div class="text-sm font-black font-mono {{ 'text-red-500' if item.quantity <= item.min_stock_level else 'text-white' }}">
+                            {{ "{:,.2f}".format(item.quantity) }}
+                        </div>
+                        <div class="text-[9px] text-gray-600 font-bold uppercase">Min Req: {{ item.min_stock_level }}</div>
+                    </td>
+
+                    <td class="px-6 py-4 text-center text-[10px] font-bold text-gray-500 uppercase">{{ item.unit }}</td>
+
+                    <td class="px-6 py-4 text-center">
+                        {% set stat = item.calculated_status %}
+                        <span class="px-3 py-1 rounded text-[9px] font-black uppercase tracking-widest border
+                            {{ 'bg-red-900/20 text-red-500 border-red-500/30' if stat == 'Out of Stock' else 
+                               'bg-amber-500/10 text-amber-500 border-amber-500/30' if stat == 'Low Stock' else 
+                               'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' }}">
+                            {{ stat }}
+                        </span>
+                    </td>
+
+                    <td class="px-6 py-4 text-center bg-blue-500/5">
+                        {% if item.quantity > 0 %}
+                        <button onclick="openTransferModal({{ item.id }}, '{{ item.item_name }}', {{ item.quantity }}, '{{ item.unit }}')"
+                                class="bg-blue-600 hover:bg-blue-500 text-white text-[9px] font-black px-3 py-1.5 rounded uppercase tracking-tighter transition-all active:scale-95 shadow-lg shadow-blue-500/20 flex items-center space-x-1 mx-auto">
+                            <span>🚚</span>
+                            <span>Push to Kitchen</span>
+                        </button>
+                        {% else %}
+                        <button disabled 
+                                class="bg-gray-800 text-gray-600 text-[9px] font-black px-3 py-1.5 rounded uppercase tracking-tighter cursor-not-allowed opacity-40 flex items-center space-x-1 mx-auto border border-white/5">
+                            <span>🚫</span>
+                            <span>No Stock</span>
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="transferModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center backdrop-blur-sm">
+    <div class="bg-[#1a1d21] border border-gray-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+        <h3 class="text-xl font-black text-white uppercase tracking-tighter mb-1">Transfer to <span class="text-blue-500">Kitchen</span></h3>
+        <p id="modalItemName" class="text-xs text-gray-500 font-mono uppercase mb-6"></p>
+
+        <form id="transferForm">
+            <input type="hidden" id="modalItemId">
+            <input type="hidden" id="maxStockHidden"> <div class="mb-4">
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Quantity to Transfer</label>
+                <div class="relative">
+                    <input type="number" id="transferQty" step="0.01" placeholder="0.00" required
+                        class="w-full bg-[#0f1113] border border-gray-800 rounded-lg py-4 px-4 text-2xl font-black text-blue-500 focus:outline-none focus:border-blue-500 transition-all">
+                    <span id="modalUnit" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 font-black uppercase"></span>
+                </div>
+                
+                <div id="errorMessage" class="hidden mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                    <p class="text-[10px] text-red-500 font-black uppercase flex items-center">
+                        <span class="mr-2">⚠️</span> <span id="errorText">Invalid Quantity</span>
+                    </p>
+                </div>
+
+                <p id="maxStockInfo" class="text-[10px] text-gray-600 mt-2 font-bold italic tracking-wide"></p>
+            </div>
+
+            <div class="flex space-x-3">
+                <button type="button" onclick="closeModal()" 
+                    class="flex-1 px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white text-xs font-black uppercase transition-all">Cancel</button>
+                <button type="submit" id="confirmBtn"
+                    class="flex-1 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 disabled:text-gray-600 disabled:cursor-not-allowed text-white text-xs font-black uppercase transition-all shadow-lg shadow-blue-500/20">Confirm Push</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+<script>
+const qtyInput = document.getElementById('transferQty');
+const errorDiv = document.getElementById('errorMessage');
+const errorText = document.getElementById('errorText');
+const confirmBtn = document.getElementById('confirmBtn');
+
+function openTransferModal(id, name, currentQty, unit) {
+    document.getElementById('modalItemId').value = id;
+    document.getElementById('modalItemName').innerText = name;
+    document.getElementById('modalUnit').innerText = unit;
+    document.getElementById('maxStockHidden').value = currentQty;
+    document.getElementById('maxStockInfo').innerText = `Warehouse Stock: ${currentQty} ${unit}`;
+    
+    // Reset state
+    qtyInput.value = "";
+    errorDiv.classList.add('hidden');
+    confirmBtn.disabled = true;
+    
+    document.getElementById('transferModal').classList.remove('hidden');
+}
+
+// REAL-TIME VALIDATION LISTENER
+qtyInput.addEventListener('input', function() {
+    const val = parseFloat(this.value);
+    const max = parseFloat(document.getElementById('maxStockHidden').value);
+    
+    let error = "";
+    
+    if (isNaN(val) || val === null) {
+        error = ""; // Empty input, just disable button
+    } else if (val <= 0) {
+        error = "Quantity must be greater than zero.";
+    } else if (val > max) {
+        error = `Insufficient Stock! Only ${max} available.`;
+    }
+
+    if (error) {
+        errorText.innerText = error;
+        errorDiv.classList.remove('hidden');
+        confirmBtn.disabled = true;
+        this.classList.add('border-red-500');
+        this.classList.remove('text-blue-500');
+        this.classList.add('text-red-500');
+    } else {
+        errorDiv.classList.add('hidden');
+        confirmBtn.disabled = (isNaN(val) || val <= 0);
+        this.classList.remove('border-red-500');
+        this.classList.add('text-blue-500');
+        this.classList.remove('text-red-500');
+    }
+});
+
+function closeModal() {
+    document.getElementById('transferModal').classList.add('hidden');
+}
+
+// Final Submit
+document.getElementById('transferForm').onsubmit = function(e) {
+    e.preventDefault();
+    const id = document.getElementById('modalItemId').value;
+    const qty = qtyInput.value;
+
+    fetch(`/manager/inventory/transfer/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: qty })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            location.reload();
+        } else {
+            alert("Server Error: " + data.message);
+        }
+    });
+};
+</script>
+
+{% endblock %}

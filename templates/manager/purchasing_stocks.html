@@ -1,0 +1,168 @@
+{% extends "manager/manager_base.html" %}
+{% block manager_content %}
+<div class="min-h-screen bg-[#0f1113] text-gray-100 p-6">
+    
+    <div class="mb-8 flex justify-between items-start border-b border-gray-800 pb-6">
+        <div>
+            <h1 class="text-3xl font-black text-white uppercase tracking-tighter">Purchasing <span class="text-amber-500">Order</span></h1>
+            <p class="text-gray-500 font-mono text-[10px] mt-1 uppercase tracking-widest italic">Restock Requisition Terminal — Terminal 01</p>
+        </div>
+        <div class="flex space-x-3">
+            <button onclick="copyOrderToClipboard()" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-2 px-4 rounded text-[10px] uppercase transition-all flex items-center shadow-lg shadow-blue-500/20">
+                <span class="mr-2">📲</span> Copy for Supplier
+            </button>
+            
+            <button onclick="window.print()" class="bg-[#1a1d21] border border-gray-700 hover:bg-gray-800 text-gray-300 font-black py-2 px-4 rounded text-[10px] uppercase transition-all flex items-center">
+                <span class="mr-2">🖨️</span> Print Receipt
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-4">
+            <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">Critical Stock Levels</h3>
+            {% for item in items %}
+            <div class="bg-[#1a1d21] border border-gray-800 p-4 rounded-xl flex justify-between items-center group hover:border-amber-500/50 transition-all">
+                <div>
+                    <div class="text-sm font-bold text-white uppercase">{{ item.item_name }}</div>
+                    <div class="text-[10px] text-red-500 font-black">Current: {{ item.quantity }} {{ item.unit }} (Min: {{ item.min_stock_level }})</div>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-gray-500 uppercase font-black block mb-1">Suggested Order</span>
+                    <div class="text-lg font-black text-amber-500 font-mono">+{{ "{:,.2f}".format(item.suggested_order) }} {{ item.unit }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div class="bg-emerald-500/10 border border-emerald-500/20 p-8 rounded-2xl text-center">
+                <span class="text-3xl">✅</span>
+                <p class="text-emerald-500 font-black uppercase text-sm mt-2">All Stocks are Optimal</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="receipt-area" class="bg-white text-black p-8 rounded shadow-2xl font-mono text-sm border-t-8 border-amber-500">
+            <div class="text-center border-b-2 border-dashed border-gray-300 pb-4 mb-4">
+                <h2 class="text-xl font-black uppercase tracking-tighter">GOJO HOUSE</h2>
+                <p class="text-[10px] font-bold">Novaliches, Quezon City</p>
+                <p class="text-[10px]">PURCHASE ORDER: #PO-{{ today.replace(' ', '') }}</p>
+            </div>
+            
+            <div class="mb-4">
+                <p class="font-bold uppercase">Date: {{ today }}</p>
+                <p class="font-bold uppercase">To: Official Supplier</p>
+            </div>
+
+            <table class="w-full mb-6">
+                <thead class="border-b border-black">
+                    <tr>
+                        <th class="text-left py-2">ITEM</th>
+                        <th class="text-right py-2">QTY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td class="py-2 uppercase font-bold text-xs">{{ item.item_name }}</td>
+                        <td class="py-2 text-right font-black">{{ "{:,.0f}".format(item.suggested_order) }} {{ item.unit }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="border-t-2 border-dashed border-gray-300 pt-4 text-[10px]">
+                <p class="mb-4">Authorized by: ____________________</p>
+                <p class="text-center italic font-bold">"QUALITY MEAT, QUALITY SERVICE"</p>
+            </div>
+        </div>
+    </div>
+    <div id="sendModal" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center backdrop-blur-sm p-4">
+    <div class="bg-[#1a1d21] border border-gray-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+        <div class="p-6 border-b border-gray-800 flex justify-between items-center">
+            <h3 class="text-lg font-black text-white uppercase tracking-tighter italic">Confirm <span class="text-blue-500">Purchase Order</span></h3>
+            <button onclick="closeSendModal()" class="text-gray-500 hover:text-white text-2xl">&times;</button>
+        </div>
+
+        <div class="p-6">
+            <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block tracking-widest text-center">Message Preview for Supplier</label>
+            <textarea id="finalOrderText" readonly 
+                class="w-full h-64 bg-[#0f1113] border border-gray-800 rounded-xl p-4 font-mono text-xs text-blue-400 leading-relaxed focus:outline-none scrollbar-hide"></textarea>
+            
+            <p class="text-[9px] text-gray-600 mt-4 text-center italic uppercase font-bold tracking-widest">
+                Clicking confirm will copy this text and mark items as "Ordered"
+            </p>
+        </div>
+
+        <div class="p-6 bg-[#24282d] flex space-x-3">
+            <button onclick="closeSendModal()" 
+                class="flex-1 px-4 py-4 rounded-xl bg-gray-800 hover:bg-gray-700 text-white text-[10px] font-black uppercase transition-all">Cancel</button>
+            <button onclick="executeSend()" 
+                class="flex-1 px-4 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center">
+                <span>📲 Confirm & Copy Text</span>
+            </button>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    @media print {
+        body * { visibility: hidden; background: white; }
+        #receipt-area, #receipt-area * { visibility: visible; }
+        #receipt-area { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+    }
+</style>
+
+<script>
+let globalMessage = ""; // Dito ise-save ang text
+
+function copyOrderToClipboard() {
+    // 1. I-build ang message base sa listahan
+    let message = "⛩️ GOJO HOUSE - PURCHASE ORDER\n";
+    message += "📅 Date: {{ today }}\n";
+    message += "--------------------------------\n\n";
+    
+    {% for item in items %}
+    message += "- {{ item.item_name }}: {{ '{:,.0f}'.format(item.suggested_order) }} {{ item.unit }}\n";
+    {% endfor %}
+    
+    message += "\nPlease confirm if stocks are available. Thank you!";
+    
+    // 2. I-display sa Modal
+    globalMessage = message;
+    document.getElementById('finalOrderText').value = message;
+    document.getElementById('sendModal').classList.remove('hidden');
+}
+
+function closeSendModal() {
+    document.getElementById('sendModal').classList.add('hidden');
+}
+
+function executeSend() {
+    const textArea = document.createElement("textarea");
+    textArea.value = globalMessage;
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            // I-save sa Database pagka-copy
+            fetch('/manager/save-purchase-log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: globalMessage })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(`✅ Order Copied & Logged! (Ref: ${data.ref})`);
+                closeSendModal();
+                window.location.href = "/manager/purchasing-logs"; // Lipat sa Logs page
+            });
+        }
+    } catch (err) {
+        alert("Failed to copy. Please try again.");
+    }
+    document.body.removeChild(textArea);
+}
+</script>
+{% endblock %}

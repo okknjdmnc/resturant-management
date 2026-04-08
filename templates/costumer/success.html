@@ -7,7 +7,7 @@
 
     <div class="max-w-md relative z-10">
         <div class="w-24 h-24 {% if is_event %}bg-red-600{% else %}bg-yellow-500{% endif %} rounded-full flex items-center justify-center mx-auto mb-10 shadow-2xl transition-all duration-700 scale-110">
-            <svg class="w-12 h-12 text-{% if is_event %}white{% else %}black{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-12 h-12 {% if is_event %}text-white{% else %}text-black{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
             </svg>
         </div>
@@ -17,15 +17,20 @@
             <p class="text-gray-400 mb-8 leading-relaxed">
                 Thank you, <span class="text-white font-bold">{{ reservation.customer_name }}</span>. 
                 We've received your inquiry for a <span class="text-red-500 font-bold">{{ reservation.event_type }}</span> event. 
-                Our coordinator will contact you at <span class="text-white font-bold">{{ reservation.phone_number }}</span> within 24 hours to finalize the details.
+                Our coordinator will contact you at <span class="text-white font-bold">{{ reservation.phone_number }}</span> within 24 hours.
             </p>
         {% else %}
             <h1 class="font-serif font-black text-4xl text-white mb-4 italic uppercase tracking-tighter">Table Reserved</h1>
-            <p class="text-gray-400 mb-8 leading-relaxed">
-                See you, <span class="text-white font-bold">{{ reservation.customer_name }}</span>! 
+            <p class="text-gray-400 mb-6 leading-relaxed">
+                See you, <span class="text-white font-bold">{{ reservation.customer_name }}</span>! <br>
                 Your table for <span class="text-yellow-500 font-bold">{{ reservation.reservation_date }}</span> at 
-                <span class="text-yellow-500 font-bold">{{ reservation.reservation_time }}</span> is now confirmed.
+                <span class="text-yellow-500 font-bold">{{ reservation.reservation_time }}</span> is now being processed.
             </p>
+            
+            <div class="mb-10 py-4 border-y border-white/5 space-y-1">
+                <p class="text-[10px] text-gray-600 uppercase tracking-[0.3em]">Reference Code</p>
+                <p class="text-2xl font-black text-yellow-500 tracking-widest">{{ code }}</p>
+            </div>
         {% endif %}
 
         <div class="space-y-4">

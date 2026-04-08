@@ -1,0 +1,106 @@
+{% extends "cashier/cashier_base.html" %}
+{% block cashier_content %}
+<div class="max-w-6xl mx-auto">
+    
+    <div class="flex justify-between items-end mb-8">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tighter uppercase">Daily <span class="text-indigo-500">Sales Report</span></h1>
+            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.3em] mt-1">Shift Summary for {{ today }}</p>
+        </div>
+        <button onclick="window.print()" class="bg-zinc-900 border border-white/10 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+            Print Shift Report
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-indigo-600 p-8 rounded-[2rem] shadow-xl shadow-indigo-600/10">
+            <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-2">Total Gross Revenue</p>
+            <h3 class="text-4xl font-black text-white italic">₱{{ "{:,.2f}".format(total_revenue or 0) }}</h3>
+        </div>
+        
+        <div class="bg-zinc-900 border border-white/5 p-8 rounded-[2rem]">
+            <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">Cash on Hand</p>
+            <h3 class="text-3xl font-black text-white italic">₱{{ "{:,.2f}".format(cash_total or 0) }}</h3>
+        </div>
+
+        <div class="bg-zinc-900 border border-white/5 p-8 rounded-[2rem]">
+            <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">GCash / Digital</p>
+            <h3 class="text-3xl font-black text-white italic">₱{{ "{:,.2f}".format(gcash_total or 0) }}</h3>
+        </div>
+    </div>
+
+    <div class="bg-zinc-900 border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+        <div class="p-6 border-b border-white/5 bg-white/[0.02]">
+            <h2 class="text-xs font-black uppercase text-zinc-400 italic tracking-widest">Transaction History</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-black/20 text-[9px] uppercase font-black text-zinc-500 tracking-[0.2em]">
+                    <tr>
+                        <th class="px-8 py-5">Time</th>
+                        <th class="px-8 py-5">Sale ID</th>
+                        <th class="px-8 py-5">Reference</th>
+                        <th class="px-8 py-5">Method</th>
+                        <th class="px-8 py-5 text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for sale in sales %}
+                    <tr class="hover:bg-white/[0.02] transition-all">
+                        <td class="px-8 py-5 text-xs font-bold text-zinc-400">
+                            {{ sale.created_at[11:16] if sale.created_at else '--:--' }}
+                        </td>
+                        <td class="px-8 py-5 text-xs font-black text-white italic">
+                            #{{ sale.id }}
+                        </td>
+                        <td class="px-8 py-5">
+                            <span class="text-[10px] font-black text-white uppercase italic">
+                                {{ sale.customer_name }}
+                            </span>
+                            <span class="block text-[8px] text-indigo-400 uppercase font-bold mt-0.5">
+                                {{ sale.tier or 'STANDARD' }} TIER
+                            </span>
+                        </td>
+                        <td class="px-8 py-5">
+                            <span class="text-[10px] font-black uppercase {% if sale.payment_method == 'CASH' %}text-emerald-500{% else %}text-blue-400{% endif %}">
+                                {{ sale.payment_method }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-5 text-right font-black text-white italic text-lg">
+                            ₱{{ "{:,.2f}".format(sale.total_amount | float) }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-8 py-20 text-center text-zinc-600 font-black uppercase italic opacity-30">
+                            No transactions recorded for this shift.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-8 p-6 border-2 border-dashed border-white/5 rounded-3xl text-center">
+        <p class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
+            End of Report • Cashier: {{ session.get('user_name') or session.get('user_email') or 'Staff' }} • Gojo House POS Terminal
+        </p>
+    </div>
+</div>
+
+<style>
+    @media print {
+        nav, footer, button { display: none !important; }
+        body { background: white !important; color: black !important; }
+        .bg-zinc-900, .bg-indigo-600 { 
+            background: transparent !important; 
+            border: 1px solid #eee !important; 
+            color: black !important; 
+            box-shadow: none !important; 
+        }
+        .text-white, .text-zinc-400, .text-indigo-200, .text-zinc-500, .text-indigo-500 { color: black !important; }
+        .max-w-6xl { max-width: 100% !important; }
+    }
+</style>
+{% endblock %}

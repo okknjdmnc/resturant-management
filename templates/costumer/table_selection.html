@@ -25,8 +25,8 @@
             {% for table in couples %}
             <label class="relative {% if table.status == 'occupied' %}cursor-not-allowed{% else %}cursor-pointer group{% endif %}">
                 <input type="radio" name="table_id" value="{{ table.table_number }}" 
-                    class="peer hidden" {% if table.status == 'occupied' %}disabled{% endif %}>
-                
+                    data-capacity="2" class="peer hidden table-radio" 
+                    {% if table.status == 'occupied' %}disabled{% endif %}>
                 <div class="aspect-square flex flex-col items-center justify-center rounded-lg border transition-all
                     {% if table.status == 'occupied' %} 
                         border-red-900/50 bg-red-900/20 text-red-800
@@ -46,8 +46,8 @@
             {% for table in family %}
             <label class="relative {% if table.status == 'occupied' %}cursor-not-allowed{% else %}cursor-pointer group{% endif %}">
                 <input type="radio" name="table_id" value="{{ table.table_number }}" 
-                    class="peer hidden" {% if table.status == 'occupied' %}disabled{% endif %}>
-                
+                        data-capacity="4" class="peer hidden table-radio" 
+                        {% if table.status == 'occupied' %}disabled{% endif %}>
                 <div class="h-20 flex flex-col items-center justify-center rounded-xl border transition-all
                     {% if table.status == 'occupied' %} 
                         border-red-900/50 bg-red-900/20 text-red-800
@@ -63,16 +63,18 @@
 
     </div>
 
-    <div class="mt-20 text-center">
+   <div class="mt-20 text-center">
         <form action="{{ url_for('customer.reserve_details') }}" method="GET">
             <input type="hidden" name="tier" value="{{ tier }}">
             <input type="hidden" id="selected_table_input" name="table" value="">
-            
-            <button type="submit" id="submit_btn" disabled class="px-12 py-4 rounded-full bg-gray-800 text-gray-500 font-black tracking-widest text-xs uppercase transition-all">
-            Select a table first
+            <input type="hidden" id="pax_input" name="num_guests" value=""> 
+
+            <button type="submit" id="submit_btn" disabled 
+                class="px-12 py-4 rounded-full bg-gray-800 text-gray-500 font-black tracking-widest text-xs uppercase transition-all">
+                Select a table first
             </button>
         </form>
-        </div>
+    </div>
 
 
   </div>

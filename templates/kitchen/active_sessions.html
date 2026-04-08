@@ -1,0 +1,127 @@
+{% extends "kitchen/kitchen_base.html" %}
+
+{% block cashier_content %} <div class="min-h-screen bg-black text-white p-4 lg:p-8">
+    
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+        <div>
+            <h1 class="text-4xl lg:text-5xl font-black italic tracking-tighter uppercase leading-none">
+                Active <span class="text-indigo-500">Dining</span>
+            </h1>
+            <p class="text-zinc-500 font-bold uppercase tracking-widest text-[9px] mt-2">Manage Table Refills & Sessions</p>
+        </div>
+        <a href="{{ url_for('kitchen.dashboard') }}" 
+           class="px-6 py-3 bg-zinc-900 border border-white/10 rounded-2xl font-black text-[10px] uppercase hover:bg-white hover:text-black transition-all">
+            <i class="fa-solid fa-arrow-left mr-2"></i>Back to KDS
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for session in sessions %}
+        <div class="bg-zinc-900/50 border border-white/5 rounded-[2.5rem] p-6 lg:p-8 hover:border-indigo-500/50 transition-all group relative overflow-hidden">
+            
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-6xl font-black italic tracking-tighter group-hover:text-indigo-500 transition-colors leading-none">T-{{ session.table_no }}</h2>
+                    <div class="flex flex-col gap-2 mt-3">
+                        <span class="w-fit px-3 py-1 bg-indigo-500/10 text-indigo-400 text-[9px] font-black uppercase rounded-lg tracking-widest border border-indigo-500/20">
+                            {{ session.menu_level }} Tier
+                        </span>
+                        <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest ml-1">
+                            <i class="fa-solid fa-rotate-right mr-1"></i>Total Refills: {{ session.refill_count or 0 }}
+                        </span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">Since</p>
+                    <p class="text-sm font-mono text-zinc-300 font-black">{{ session.created_at.strftime('%H:%M %p') if session.created_at is not string else session.created_at[11:16] }}</p>
+                </div>
+            </div>
+
+            <div class="mb-6 max-h-32 overflow-y-auto bg-black/40 rounded-2xl p-4 border border-white/5 shadow-inner">
+                <p class="text-[8px] font-black text-zinc-600 uppercase mb-3 tracking-widest italic flex items-center gap-2">
+                    <span class="w-1 h-1 bg-zinc-600 rounded-full"></span> Recent Activity
+                </p>
+                <div class="space-y-2">
+                    {% if session.refill_history %}
+                        {% for log in session.refill_history %}
+                        <div class="flex justify-between items-center bg-white/5 p-2 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+                                <p class="text-[10px] text-zinc-300 font-mono uppercase font-bold">{{ log['items'] }}</p>
+                            </div>
+                            <span class="text-[8px] font-black text-zinc-600 uppercase italic">{{ log['timestamp'] }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-[9px] text-zinc-700 italic py-2">No refills recorded yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <p class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2 flex justify-between">
+                    <span>Quick Refill (200g)</span>
+                    <span class="text-indigo-500">Tier Menu</span>
+                </p>
+                <div class="grid grid-cols-1 gap-2">
+                    {% set tier_key = session.menu_level|lower %}
+                    {% if tier_key in menu_data %}
+                        {% for item in menu_data[tier_key]['items'] %}
+                        <a href="{{ url_for('kitchen.trigger_refill', order_id=session.id, item_name=item.name) }}" 
+                           onclick="return startRefill(this, '{{ item.name }}')"
+                           class="refill-btn flex justify-between items-center w-full p-4 bg-white/5 hover:bg-indigo-600 rounded-2xl group/btn transition-all border border-white/5">
+                            <span class="text-[11px] font-black uppercase tracking-tight flex items-center gap-3">
+                                <span class="item-status w-2 h-2 bg-zinc-700 rounded-full"></span>
+                                {{ item.name }}
+                            </span>
+                            <span class="text-[9px] font-black opacity-30 group-hover/btn:opacity-100 transition-opacity">+ REFILL</span>
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-[9px] text-red-500 italic uppercase">Menu data not found for {{ session.menu_level }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-white/5">
+                <a href="{{ url_for('kitchen.mark_done', order_id=session.id) }}" 
+                   onclick="return confirm('Confirm End Session for Table {{ session.table_no }}?')"
+                   class="block w-full py-4 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-black rounded-2xl text-center uppercase tracking-[0.2em] transition-all border border-red-500/10">
+                    <i class="fa-solid fa-door-open mr-2"></i>Close Table Session
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-span-full py-40 text-center bg-zinc-900/20 rounded-[4rem] border-2 border-dashed border-white/5">
+            <i class="fa-solid fa-chair text-4xl text-zinc-800 mb-4"></i>
+            <h3 class="text-xl font-black text-zinc-700 uppercase tracking-[0.4em]">No Active Tables</h3>
+            <p class="text-[10px] text-zinc-800 font-bold uppercase mt-2">All customers are currently settled</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function startRefill(btn, itemName) {
+    // Visual feedback para sa staff
+    btn.classList.add('pointer-events-none', 'opacity-50', 'bg-indigo-900');
+    const textSpan = btn.querySelector('.text-[9px]');
+    const statusDot = btn.querySelector('.item-status');
+    
+    if(textSpan) textSpan.textContent = "PROCESSING...";
+    if(statusDot) {
+        statusDot.classList.remove('bg-zinc-700');
+        statusDot.classList.add('bg-white', 'animate-ping');
+    }
+    return true; 
+}
+</script>
+
+<style>
+    /* Custom Scrollbar for Session History */
+    .overflow-y-auto::-webkit-scrollbar { width: 4px; }
+    .overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
+    .overflow-y-auto::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+    .overflow-y-auto::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+</style>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "front_desk/front_desk_base.html" %}
+{% block front_desk_content %}
+
+<div class="flex flex-col items-center p-10 bg-zinc-900 min-h-screen">
+    <div class="print-area bg-white text-black p-6 w-[80mm] shadow-2xl border-t-4 border-indigo-600 rounded-sm">
+        <div class="text-center mb-4">
+            <h1 class="text-xl font-black tracking-tighter uppercase italic text-indigo-900">Gojo House</h1>
+            <p class="text-[10px] uppercase tracking-widest text-gray-500 border-b pb-2">Event Seating Pass</p>
+        </div>
+
+        <div class="space-y-4 thermal-font text-black" style="font-family: 'Courier New', Courier, monospace;">
+            <div class="flex justify-between items-center bg-zinc-100 p-2">
+                <span class="text-[10px] font-bold uppercase">Ref ID</span>
+                <span class="text-xl font-black tracking-tighter">#{{ ev.id }}</span>
+            </div>
+
+            <div class="text-[11px] space-y-1.5">
+                <div class="flex justify-between border-b border-dotted border-gray-300 pb-1">
+                    <span class="uppercase text-gray-500">Client:</span>
+                    <span class="font-black uppercase text-right">{{ ev.full_name or ev.customer_name }}</span>
+                </div>
+                
+                <div class="flex justify-between border-b border-dotted border-gray-300 pb-1">
+                    <span class="uppercase text-gray-500">Package:</span>
+                    <span class="font-black uppercase text-indigo-600">{{ ev.event_package or ev.event_type }}</span>
+                </div>
+
+                <div class="flex justify-between border-b border-dotted border-gray-200 pb-1">
+                    <span class="uppercase text-gray-500">Pax Count:</span>
+                    <span class="font-black underline">{{ ev.pax or ev.estimated_pax }} Persons</span>
+                </div>
+
+                <div class="flex justify-between border-b border-dotted border-gray-200 pb-1">
+                    <span class="uppercase text-gray-500">Event Date:</span>
+                    <span class="font-bold italic">{{ ev.event_datetime.strftime('%b %d, %Y') if ev.event_datetime else ev.event_date }}</span>
+                </div>
+
+                <div class="flex justify-between border-b border-dotted border-gray-200 pb-1">
+                    <span class="uppercase text-gray-500">Time In:</span>
+                    <span id="currentTime" class="font-bold italic"></span>
+                </div>
+            </div>
+
+            <div class="border-t-2 border-dashed border-gray-300 pt-4 text-center">
+                <div class="bg-indigo-600 text-white py-2 mb-2 text-[10px] font-bold tracking-[0.2em] uppercase">
+                    READY FOR BILLING
+                </div>
+                <p class="text-[9px] font-bold italic text-gray-700 uppercase leading-tight">
+                    Please present this slip to the cashier<br>for final payment and checkout.
+                </p>
+                
+                <div class="mt-4 flex flex-col items-center gap-1 opacity-60">
+                    <div class="text-[8px] uppercase">Validated by: {{ session.get('name') or 'Front Desk' }}</div>
+                    <div class="text-[7px] font-mono">GOJO-EVT-{{ ev.id }}-{{ ev.pax }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="no-print mt-8 flex space-x-4">
+        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-2.5 rounded-full font-black text-xs uppercase transition-all shadow-lg flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" stroke-width="2"/></svg>
+            Print Event Slip
+        </button>
+        <a href="{{ url_for('front_desk.dashboard') }}" class="bg-white/10 hover:bg-white/20 text-white px-6 py-2.5 rounded-full font-bold text-xs uppercase transition-all border border-white/5">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+    @media print {
+        body { background: white; margin: 0; padding: 0; }
+        .no-print { display: none !important; }
+        .print-area { 
+            width: 80mm; 
+            margin: 0 auto; 
+            box-shadow: none !important; 
+            border: none !important;
+        }
+    }
+</style>
+
+<script>
+    // Real-time Time In
+    const now = new Date();
+    const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+    document.getElementById('currentTime').innerText = now.toLocaleTimeString('en-US', options);
+</script>
+
+{% endblock %}

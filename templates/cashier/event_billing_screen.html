@@ -1,0 +1,49 @@
+{% extends "cashier/cashier_base.html" %}
+{% block cashier_content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+        <span class="px-4 py-1 bg-blue-500/10 text-blue-400 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-blue-500/20">
+            Event Settlement Mode
+        </span>
+    </div>
+
+    <div class="grid md:grid-cols-5 gap-8">
+        <div class="md:col-span-3">
+            <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                <div class="p-10 bg-gradient-to-br from-blue-900/20 to-zinc-900 border-b border-white/5">
+                    <h2 class="text-4xl font-black text-white uppercase italic tracking-tighter">{{ ev.full_name }}</h2>
+                    <p class="text-blue-400 font-bold uppercase tracking-widest text-xs mt-2">{{ ev.event_type }} • {{ ev.event_date }}</p>
+                </div>
+
+                <div class="p-10 space-y-6">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Venue / Base Package</span>
+                        <span class="text-white font-mono font-bold">₱{{ "{:,.2f}".format(base_fee) }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm border-b border-white/5 pb-6">
+                        <span class="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Catering (₱{{ per_head }} x {{ ev.estimated_pax }} Pax)</span>
+                        <span class="text-white font-mono font-bold">₱{{ "{:,.2f}".format(per_head * ev.pax) }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-end pt-4">
+                        <span class="text-xl font-black text-white uppercase italic">Total Event Bill</span>
+                        <span class="text-5xl font-black text-blue-500 tracking-tighter italic">₱{{ "{:,.2f}".format(total) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-2">
+            <form action="{{ url_for('cashier.confirm_event_payment', ev_id=ev.id) }}" method="POST" class="bg-zinc-900 border border-white/10 p-8 rounded-[2.5rem] space-y-4">
+                <input type="hidden" name="total_amount" value="{{ total_bill }}">
+                
+                <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest text-center mb-4">Select Payment Method</h3>
+                
+                <button type="submit" name="method" value="cash" class="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase transition-all">Cash</button>
+                <button type="submit" name="method" value="card" class="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase transition-all">Credit Card</button>
+                <button type="submit" name="method" value="gcash" class="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-xs font-black uppercase italic tracking-tighter transition-all shadow-lg shadow-blue-600/20">Confirm & Close Event</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+venv/
+.env
+.env.*
+config.py
+app.py
+helper.py
+__pycache__/
+*.pyc
+node_modules/
+dist/
+build/

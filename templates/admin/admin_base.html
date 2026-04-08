@@ -27,11 +27,15 @@
             <a href="{{ url_for('admin.audit_logs') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all {{ 'bg-red-600 text-white shadow-lg shadow-red-600/20' if request.path == url_for('admin.audit_logs') else 'text-gray-500 hover:bg-white/5 hover:text-white' }}">
                 <span>Security Logs</span>
             </a>
-            <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-500 hover:bg-white/5 hover:text-white transition-all">
-                <span>Inventory</span>
-            </a>
             <a href="{{ url_for('admin.add_staff') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-500 hover:bg-white/5 hover:text-white transition-all">
-                <span>Staff Management</span>
+                <span>Account Management</span>
+            </a>
+            <a href="{{ url_for('admin.restricted_users') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all {{ 'bg-red-600 text-white shadow-lg shadow-red-600/20' if request.path == url_for('admin.restricted_users') else 'text-gray-500 hover:bg-white/5 hover:text-white' }}">
+                <span>Restricted Users</span>
+            </a>
+
+            <a href="{{ url_for('admin.ip_manager') }}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all {{ 'bg-red-600 text-white shadow-lg shadow-red-600/20' if request.path == url_for('admin.ip_manager') else 'text-gray-500 hover:bg-white/5 hover:text-white' }}">
+                <span>IP Manager</span>
             </a>
         </nav>
 
@@ -63,8 +67,9 @@
 
         {% block admin_content %}{% endblock %}
     </main>
-
+    
+    <script src="{{ url_for('static', filename='js/security.js') }}"></script>
     {% block js %}{% endblock %}
-
+    
 </body>
 </html>

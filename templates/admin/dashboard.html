@@ -1,38 +1,71 @@
 {% extends "admin/admin_base.html" %}
-{% block title %}Dashboard{% endblock %}
-{% block header_title %}System Overview{% endblock %}
-{% block sub_title %}Main Dashboard{% endblock %}
+{% block title %}Security Dashboard{% endblock %}
+{% block header_title %}System Operations{% endblock %}
+{% block sub_title %}Security & Performance Monitoring{% endblock %}
 
 {% block admin_content %}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
-        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Total Reservations</p>
-        <h3 class="text-4xl font-black text-white italic tracking-tighter">{{ total_reservations }}</h3>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+    <div class="bg-white/[0.02] border border-white/5 p-6 rounded-3xl backdrop-blur-xl">
+        <p class="text-gray-500 text-[9px] uppercase font-black tracking-widest mb-1">Total Reservations</p>
+        <h3 class="text-3xl font-black text-white italic tracking-tighter">{{ total_reservations }}</h3>
+        <span class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Active System</span>
     </div>
     
-    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
-        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Inventory Items</p>
-        <h3 class="text-4xl font-black text-white italic tracking-tighter">0</h3>
+    <div class="bg-white/[0.02] border border-white/5 p-6 rounded-3xl backdrop-blur-xl">
+        <p class="text-gray-500 text-[9px] uppercase font-black tracking-widest mb-1">Critical Stock</p>
+        <h3 class="text-3xl font-black {{ 'text-red-500' if low_stock_count > 0 else 'text-white' }} italic tracking-tighter">{{ low_stock_count }}</h3>
+        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic">Action Required</span>
     </div>
 
-    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
-        <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-2">Active Staff</p>
-        <h3 class="text-4xl font-black text-white italic tracking-tighter">1</h3>
+    <div class="bg-white/[0.02] border border-white/5 p-6 rounded-3xl backdrop-blur-xl border-l-red-600/50 border-l-2">
+        <p class="text-gray-500 text-[9px] uppercase font-black tracking-widest mb-1">Failed Logins (24h)</p>
+        <h3 class="text-3xl font-black text-red-600 italic tracking-tighter">{{ failed_logins }}</h3>
+        <span class="text-[9px] text-red-500/50 font-bold uppercase tracking-widest">Security Watch</span>
+    </div>
+
+    <div class="bg-white/[0.02] border border-white/5 p-6 rounded-3xl backdrop-blur-xl">
+        <p class="text-gray-500 text-[9px] uppercase font-black tracking-widest mb-1">Blacklisted IPs</p>
+        <h3 class="text-3xl font-black text-white italic tracking-tighter">{{ blacklisted_ips }}</h3>
+        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Firewall Active</span>
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white/[0.02] border border-white/5 p-8 rounded-3xl">
-        <h4 class="text-xs font-black uppercase tracking-widest mb-6">Quick Actions</h4>
-        <div class="grid grid-cols-2 gap-4">
-            <button class="p-6 bg-white/5 rounded-2xl text-left hover:bg-red-600 transition-all group">
-                <span class="block text-[10px] font-black uppercase text-gray-400 group-hover:text-white/80">Staff</span>
-                <span class="block text-xs font-bold uppercase mt-1">Add New Staff</span>
-            </button>
-            <button class="p-6 bg-white/5 rounded-2xl text-left hover:bg-red-600 transition-all group">
-                <span class="block text-[10px] font-black uppercase text-gray-400 group-hover:text-white/80">Menu</span>
-                <span class="block text-xs font-bold uppercase mt-1">Manage Menu</span>
-            </button>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 bg-white/[0.02] border border-white/5 p-8 rounded-3xl">
+        <div class="flex justify-between items-center mb-6">
+            <h4 class="text-xs font-black uppercase tracking-widest">Recent Security Events</h4>
+            <a href="{{ url_for('admin.audit_logs') }}" class="text-[10px] text-red-500 font-bold uppercase hover:underline">View All Logs</a>
+        </div>
+        <div class="space-y-4">
+            {% for log in recent_logs %}
+            <div class="flex items-center justify-between p-4 bg-white/[0.03] rounded-2xl border border-white/5">
+                <div class="flex items-center space-x-4">
+                    <div class="w-2 h-2 rounded-full {{ 'bg-red-600 animate-pulse' if 'FAILED' in log.action or 'BLOCKED' in log.action else 'bg-green-500' }}"></div>
+                    <div>
+                        <p class="text-[11px] font-bold text-white uppercase tracking-tighter">{{ log.action }}</p>
+                        <p class="text-[10px] text-gray-500">{{ log.user_email }} • {{ log.ip_address }}</p>
+                    </div>
+                </div>
+                <p class="text-[9px] text-gray-600 font-mono">{{ log.created_at }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="space-y-6">
+        <div class="bg-white/[0.02] border border-white/5 p-8 rounded-3xl">
+            <h4 class="text-xs font-black uppercase tracking-widest mb-6 italic text-red-600">Admin Controls</h4>
+            <div class="space-y-3">
+                <a href="{{ url_for('admin.add_staff') }}" class="block w-full p-4 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-red-600 transition-all">
+                    Register Staff
+                </a>
+                <a href="{{ url_for('admin.ip_manager') }}" class="block w-full p-4 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-white hover:text-black transition-all">
+                    Firewall Config
+                </a>
+                <a href="{{ url_for('admin.restricted_users') }}" class="block w-full p-4 bg-red-600/10 border border-red-600/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center text-red-500 hover:bg-red-600 hover:text-white transition-all">
+                    Locked Accounts
+                </a>
+            </div>
         </div>
     </div>
 </div>

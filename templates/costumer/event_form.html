@@ -1,21 +1,74 @@
 {% extends "./base.html" %}
+{% block title %}GOJO HOUSE - Event Booking{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<style>
+    /* Gawing Dark Theme ang Calendar */
+    .flatpickr-calendar {
+        background: #1a1a1a !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    }
+    .flatpickr-day { color: #fff !important; }
+    
+    /* Style para sa mga BOOKED dates (Red) */
+    .flatpickr-day.flatpickr-disabled, 
+    .flatpickr-day.flatpickr-disabled:hover {
+        background: #450a0a !important; /* Dark Red */
+        color: #ef4444 !important;      /* Bright Red Text */
+        cursor: not-allowed !important;
+        opacity: 1 !important;
+        border-radius: 8px;
+        text-decoration: line-through;
+    }
+
+    /* Style para sa Selected Date (Yellow) */
+    .flatpickr-day.selected {
+        background: #eab308 !important;
+        border-color: #eab308 !important;
+        color: #000 !important;
+    }
+    
+    .flatpickr-months .flatpickr-month, 
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+        background: transparent !important;
+        color: #fff !important;
+        fill: #fff !important;
+    }
+    span.flatpickr-weekday { color: #555 !important; }
+</style>
 <section class="relative min-h-screen bg-[#0f0f0f] px-6 pt-32 pb-20">
   <div class="max-w-3xl mx-auto relative z-10">
     <div class="mb-12 text-center">
         <h2 class="text-yellow-500 font-serif font-black text-4xl uppercase italic tracking-widest">Event Booking</h2>
         <p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Host your special moments at Gojo House</p>
+        <p class="text-white text-[10px] mt-4 tracking-[0.3em]">PACKAGE: <span class="text-red-500 uppercase">{{ package_id }}</span></p>
     </div>
 
-    <form action="{{ url_for('customer.submit_event') }}" method="POST" class="space-y-8 p-10 rounded-3xl border border-white/5 bg-white/[0.02]">
+    <form action="{{ url_for('customer.submit_event') }}" method="POST" enctype="multipart/form-data" class="space-y-8 p-10 rounded-3xl border border-white/5 bg-white/[0.02]">
+      
+      <input type="hidden" name="event_package" value="{{ package_id }}">
+
       <div class="grid md:grid-cols-2 gap-8">
         <div class="space-y-2">
           <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Full Name</label>
-          <input type="text" name="customer_name" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+          <input type="text" name="full_name" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
         </div>
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Email Address</label>
+          <input type="email" name="email" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
         <div class="space-y-2">
           <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Phone Number</label>
           <input type="tel" name="phone_number" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Address</label>
+          <input type="text" name="address" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
         </div>
       </div>
 
@@ -30,24 +83,46 @@
           </select>
         </div>
         <div class="space-y-2">
-          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Date</label>
-          <input type="date" name="event_date" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Select Event Date</label>
+          <input type="text" name="event_date" id="event_calendar" placeholder="Click to select date" required 
+                class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50 cursor-pointer">
+          <p id="date-warning" class="text-red-500 text-[10px] mt-1 hidden italic">Note: Dates in red are already booked.</p>
         </div>
         <div class="space-y-2">
           <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Est. Pax</label>
-          <input type="number" name="estimated_pax" placeholder="20+" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50">
+          <input type="number" name="pax" id="pax_input" placeholder="Enter number of guests" required 
+                class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none transition-all duration-300">
+          <p id="pax-error-msg" class="text-red-500 text-[10px] mt-1 hidden italic font-bold tracking-wide"></p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Valid ID (Image)</label>
+          <input type="file" name="id_image" accept="image/*" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-yellow-500 file:text-black hover:file:bg-yellow-400">
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Downpayment Receipt</label>
+          <input type="file" name="receipt_image" accept="image/*" required class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-yellow-500 file:text-black hover:file:bg-yellow-400">
         </div>
       </div>
 
       <div class="space-y-2">
         <label class="text-[10px] uppercase text-gray-400 font-bold ml-1">Special Requirements (Optional)</label>
-        <textarea name="requirements" rows="4" placeholder="Themes, dietary restrictions, etc." class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50"></textarea>
+        <textarea name="special_requests" rows="4" placeholder="Themes, dietary restrictions, etc." class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-yellow-500/50"></textarea>
       </div>
 
-      <button type="submit" class="w-full py-5 rounded-2xl bg-yellow-500 text-black font-black tracking-[0.2em] uppercase hover:bg-yellow-400 transition-all">
+      <button type="submit" id="submit-btn" class="w-full py-5 rounded-2xl bg-yellow-500 text-black font-black tracking-[0.2em] uppercase hover:bg-yellow-400 transition-all">
         Send Inquiry
       </button>
     </form>
   </div>
 </section>
+
+{% block js %}
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="{{ url_for('static', filename='js/event.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pax.js') }}"></script>
+{% endblock %}
+
 {% endblock %}

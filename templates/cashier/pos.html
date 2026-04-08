@@ -1,60 +1,93 @@
-{% extends "mysite/base.html" %}
+{% extends "cashier/base.html" %}
 
 {% block title %}Point of Sale - Premium Restaurant{% endblock %}
 
 {% block content %}
 <div class="flex flex-col lg:flex-row gap-6 h-screen">
+
     <!-- Menu Section -->
     <div class="flex-1 overflow-auto">
         <div class="p-6">
             <h1 class="text-3xl font-semibold text-gray-800 mb-6">Point of Sale</h1>
-            
+
             <!-- Category Tabs -->
             <div class="flex gap-2 mb-6 overflow-x-auto">
                 <button class="category-tab px-4 py-2 rounded-md bg-red-600 text-white font-medium transition" data-category="all">
                     All Items
                 </button>
-                {% for category in categories %}
-                <button class="category-tab px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 transition" data-category="{{ category.id }}">
-                    {{ category.name }}
-                </button>
-                {% endfor %}
+
             </div>
 
             <!-- Menu Grid -->
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="menu-grid">
-                {% for item in menu_items %}
-                <div class="menu-item bg-white rounded-md shadow-md p-4 cursor-pointer hover:shadow-lg transition" 
-                     data-item-id="{{ item.id }}" 
-                     data-category-id="{{ item.category.id }}"
-                     data-name="{{ item.name }}"
-                     data-price="{{ item.price }}">
+
+                <!-- Item -->
+                <div class="menu-item bg-white rounded-md shadow-md p-4 cursor-pointer hover:shadow-lg transition"
+                    data-item-id="1"
+                    data-category-id="1"
+                    data-name="Coca Cola"
+                    data-price="2.50">
+
                     <div class="text-center">
-                        <h3 class="text-lg font-semibold text-gray-800">{{ item.name }}</h3>
-                        <p class="text-gray-600 text-sm mt-1">{{ item.description|truncatewords:10 }}</p>
-                        <p class="text-xl font-bold text-red-600 mt-3">${{ item.price }}</p>
+                        <h3 class="text-lg font-semibold text-gray-800">Coca Cola</h3>
+                        <p class="text-gray-600 text-sm mt-1">Cold refreshing soda drink</p>
+                        <p class="text-xl font-bold text-red-600 mt-3">$2.50</p>
                         <button class="add-to-order w-full mt-3 bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition text-sm font-medium">
                             Add
                         </button>
                     </div>
                 </div>
-                {% endfor %}
+
+                <!-- Item -->
+                <div class="menu-item bg-white rounded-md shadow-md p-4 cursor-pointer hover:shadow-lg transition"
+                    data-item-id="2"
+                    data-category-id="2"
+                    data-name="Burger"
+                    data-price="5.99">
+
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold text-gray-800">Burger</h3>
+                        <p class="text-gray-600 text-sm mt-1">Beef burger with cheese</p>
+                        <p class="text-xl font-bold text-red-600 mt-3">$5.99</p>
+                        <button class="add-to-order w-full mt-3 bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition text-sm font-medium">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item -->
+                <div class="menu-item bg-white rounded-md shadow-md p-4 cursor-pointer hover:shadow-lg transition"
+                    data-item-id="3"
+                    data-category-id="3"
+                    data-name="Ice Cream"
+                    data-price="3.50">
+
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold text-gray-800">Ice Cream</h3>
+                        <p class="text-gray-600 text-sm mt-1">Vanilla ice cream dessert</p>
+                        <p class="text-xl font-bold text-red-600 mt-3">$3.50</p>
+                        <button class="add-to-order w-full mt-3 bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition text-sm font-medium">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- Order Summary Sidebar -->
+    <!-- Order Summary -->
     <div class="w-full lg:w-80 bg-white rounded-lg shadow-lg p-6 flex flex-col">
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">Order Summary</h2>
 
-        <!-- Table Selection -->
+        <!-- Table -->
         <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">Select Table</label>
-            <select id="table-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <select id="table-select" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                 <option value="">-- Choose a table --</option>
-                {% for table in tables %}
-                <option value="{{ table.id }}">Table {{ table.table_number }} ({{ table.capacity }} seats)</option>
-                {% endfor %}
+                <option value="1">Table 1 (4 seats)</option>
+                <option value="2">Table 2 (6 seats)</option>
+                <option value="3">Table 3 (2 seats)</option>
             </select>
         </div>
 
@@ -66,202 +99,128 @@
         <!-- Totals -->
         <div class="border-t pt-4 mb-6">
             <div class="flex justify-between mb-2">
-                <span class="text-gray-700">Subtotal</span>
-                <span class="text-gray-800 font-semibold" id="subtotal">$0.00</span>
+                <span>Subtotal</span>
+                <span id="subtotal">$0.00</span>
             </div>
+
             <div class="flex justify-between mb-4">
-                <span class="text-gray-700">Tax (8%)</span>
-                <span class="text-gray-800 font-semibold" id="tax">$0.00</span>
+                <span>Tax (8%)</span>
+                <span id="tax">$0.00</span>
             </div>
+
             <div class="flex justify-between text-lg font-bold bg-red-50 p-3 rounded">
                 <span>Total</span>
                 <span class="text-red-600" id="total">$0.00</span>
             </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Buttons -->
         <div class="flex gap-3">
-            <button id="clear-order" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition font-semibold">
+            <button id="clear-order" class="flex-1 px-4 py-2 bg-gray-300 rounded-md">
                 Clear
             </button>
-            <button id="submit-order" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-semibold">
+
+            <button id="submit-order" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md">
                 Complete Order
             </button>
         </div>
     </div>
+
 </div>
 
 <script>
-    let cart = {};
-    const TAX_RATE = 0.08;
+let cart = {};
+const TAX_RATE = 0.08;
 
-    // Add item to order
-    document.querySelectorAll('.add-to-order').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const item = e.closest('.menu-item');
-            const itemId = item.dataset.itemId;
-            const name = item.dataset.name;
-            const price = parseFloat(item.dataset.price);
+document.querySelectorAll('.add-to-order').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const item = e.target.closest('.menu-item');
+        const id = item.dataset.itemId;
+        const name = item.dataset.name;
+        const price = parseFloat(item.dataset.price);
 
-            if (cart[itemId]) {
-                cart[itemId].quantity += 1;
-            } else {
-                cart[itemId] = { name, price, quantity: 1 };
-            }
-            updateCart();
-        });
-    });
-
-    // Category filter
-    document.querySelectorAll('.category-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.category-tab').forEach(t => {
-                t.classList.remove('bg-red-600', 'text-white');
-                t.classList.add('bg-gray-200', 'text-gray-700');
-            });
-            tab.classList.remove('bg-gray-200', 'text-gray-700');
-            tab.classList.add('bg-red-600', 'text-white');
-
-            const categoryId = tab.dataset.category;
-            const items = document.querySelectorAll('.menu-item');
-            items.forEach(item => {
-                if (categoryId === 'all' || item.dataset.categoryId === categoryId) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-    });
-
-    // Update cart display
-    function updateCart() {
-        const orderItems = document.getElementById('order-items');
-        
-        if (Object.keys(cart).length === 0) {
-            orderItems.innerHTML = '<p class="text-gray-500 text-center">No items added</p>';
-        } else {
-            let html = '';
-            Object.entries(cart).forEach(([itemId, item]) => {
-                const itemTotal = (item.price * item.quantity).toFixed(2);
-                html += `
-                    <div class="flex justify-between items-center mb-3 bg-white p-2 rounded">
-                        <div class="flex-1">
-                            <p class="text-sm font-semibold text-gray-800">${item.name}</p>
-                            <p class="text-xs text-gray-600">$${item.price.toFixed(2)} x ${item.quantity}</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="updateQuantity('${itemId}', -1)" class="px-2 py-1 bg-gray-200 rounded text-xs">−</button>
-                            <span class="w-6 text-center text-sm">${item.quantity}</span>
-                            <button onclick="updateQuantity('${itemId}', 1)" class="px-2 py-1 bg-gray-200 rounded text-xs">+</button>
-                            <button onclick="removeItem('${itemId}')" class="px-2 py-1 bg-red-200 text-red-600 rounded text-xs hover:bg-red-300">✕</button>
-                        </div>
-                    </div>
-                `;
-            });
-            orderItems.innerHTML = html;
+        if(cart[id]){
+            cart[id].quantity++;
+        }else{
+            cart[id] = {name, price, quantity:1};
         }
-        updateTotals();
-    }
 
-    function updateQuantity(itemId, change) {
-        cart[itemId].quantity += change;
-        if (cart[itemId].quantity <= 0) {
-            delete cart[itemId];
-        }
         updateCart();
-    }
+    });
+});
 
-    function removeItem(itemId) {
-        delete cart[itemId];
-        updateCart();
-    }
+function updateCart(){
+    const orderItems = document.getElementById('order-items');
 
-    function updateTotals() {
-        let subtotal = 0;
-        Object.values(cart).forEach(item => {
-            subtotal += item.price * item.quantity;
+    if(Object.keys(cart).length === 0){
+        orderItems.innerHTML = '<p class="text-gray-500 text-center">No items added</p>';
+    }else{
+
+        let html='';
+
+        Object.entries(cart).forEach(([id,item])=>{
+            html += `
+            <div class="flex justify-between mb-2 bg-white p-2 rounded">
+                <div>
+                    <p class="text-sm font-semibold">${item.name}</p>
+                    <p class="text-xs">$${item.price} x ${item.quantity}</p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="updateQty('${id}',-1)">-</button>
+                    <span>${item.quantity}</span>
+                    <button onclick="updateQty('${id}',1)">+</button>
+                    <button onclick="removeItem('${id}')">x</button>
+                </div>
+            </div>
+            `;
         });
 
-        const tax = subtotal * TAX_RATE;
-        const total = subtotal + tax;
-
-        document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
-        document.getElementById('tax').textContent = '$' + tax.toFixed(2);
-        document.getElementById('total').textContent = '$' + total.toFixed(2);
+        orderItems.innerHTML = html;
     }
 
-    // Clear order
-    document.getElementById('clear-order').addEventListener('click', () => {
-        if (confirm('Clear all items from order?')) {
-            cart = {};
-            updateCart();
-        }
-    });
+    updateTotals();
+}
 
-    // Submit order
-    document.getElementById('submit-order').addEventListener('click', async () => {
-        const tableId = document.getElementById('table-select').value;
-        
-        if (!tableId) {
-            alert('Please select a table');
-            return;
-        }
+function updateQty(id,change){
+    cart[id].quantity += change;
 
-        if (Object.keys(cart).length === 0) {
-            alert('Please add items to the order');
-            return;
-        }
-
-        // Prepare order data
-        const orderData = {
-            table_id: tableId,
-            items: Object.entries(cart).map(([itemId, item]) => ({
-                menu_item_id: itemId,
-                quantity: item.quantity,
-                price: item.price,
-            }))
-        };
-
-        try {
-            // Send to backend to create order
-            const response = await fetch('{% url "order_create" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-                body: JSON.stringify(orderData),
-            });
-
-            if (response.ok) {
-                alert('Order created successfully!');
-                cart = {};
-                document.getElementById('table-select').value = '';
-                updateCart();
-            } else {
-                alert('Error creating order. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error creating order');
-        }
-    });
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
+    if(cart[id].quantity <=0){
+        delete cart[id];
     }
+
+    updateCart();
+}
+
+function removeItem(id){
+    delete cart[id];
+    updateCart();
+}
+
+function updateTotals(){
+    let subtotal=0;
+
+    Object.values(cart).forEach(item=>{
+        subtotal += item.price * item.quantity;
+    });
+
+    const tax = subtotal * TAX_RATE;
+    const total = subtotal + tax;
+
+    document.getElementById("subtotal").textContent="$"+subtotal.toFixed(2);
+    document.getElementById("tax").textContent="$"+tax.toFixed(2);
+    document.getElementById("total").textContent="$"+total.toFixed(2);
+}
+
+document.getElementById("clear-order").onclick=()=>{
+    cart={};
+    updateCart();
+}
+
+document.getElementById("submit-order").onclick=()=>{
+    alert("Order submitted");
+    cart={};
+    updateCart();
+}
 </script>
 {% endblock %}

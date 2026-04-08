@@ -1,0 +1,101 @@
+{% extends "cashier/cashier_base.html" %}
+{% block cashier_content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+        
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-black italic tracking-tighter text-white">GOJO <span class="text-yellow-500">HOUSE</span></h2>
+            <p class="text-[8px] text-gray-500 uppercase tracking-[0.3em] mt-1 font-bold">Billing Statement</p>
+        </div>
+
+        <div class="space-y-3 bg-white/[0.02] p-6 rounded-3xl border border-white/5 mb-6">
+            <div class="flex justify-between text-[10px] uppercase font-bold text-gray-500">
+                <span>Package Total ({{ res.package }})</span>
+                <span class="text-white font-mono">₱<span>{{ "{:,.2f}".format(total_price) }}</span></span>
+            </div>
+            <div class="flex justify-between text-[10px] uppercase font-bold text-gray-500">
+                <span>Downpayment Paid</span>
+                <span class="text-emerald-500 font-mono">- ₱<span>{{ "{:,.2f}".format(res.down_payment) }}</span></span>
+            </div>
+            
+            <div class="flex justify-between items-center py-2 border-t border-white/5 mt-2">
+                <span class="text-[9px] text-yellow-500 uppercase font-black italic">Extra / Add-ons</span>
+                <input type="number" id="extra_charge" value="0" step="0.01"
+                       class="bg-zinc-800 border border-white/10 rounded-lg px-3 py-1 text-right text-white font-mono text-xs w-24 outline-none focus:border-yellow-500"
+                       oninput="calculateTotal()">
+            </div>
+
+            <div class="h-px bg-white/10 my-2"></div>
+            
+            <div class="flex justify-between items-center">
+                <span class="text-xs font-black text-white uppercase italic">Net Amount Due</span>
+                <span class="text-2xl font-black text-yellow-500 font-mono tracking-tighter" id="net_due_display">
+                    ₱{{ "{:,.2f}".format(balance_due) }}
+                </span>
+            </div>
+        </div>
+
+        <form action="{{ url_for('cashier.settle_account', res_id=res.id) }}" method="POST">
+            <input type="hidden" name="final_price" id="hidden_final_price" value="{{ total_price }}">
+            
+            <div class="space-y-4 mb-8">
+                <div>
+                    <label class="text-[9px] text-gray-500 uppercase font-black block mb-2 px-2 tracking-widest">Cash Tendered</label>
+                    <input type="number" name="cash_received" id="cash_received" step="0.01" placeholder="0.00" required
+                           class="w-full bg-white text-black font-black text-3xl p-4 rounded-2xl outline-none border-4 border-transparent focus:border-yellow-500 transition-all text-center"
+                           oninput="calculateTotal()">
+                </div>
+                
+                <div class="flex justify-between items-center px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                    <span class="text-[10px] text-emerald-500 font-black uppercase">Change / Sukli</span>
+                    <span class="text-xl font-black text-emerald-500 font-mono" id="change_display">₱0.00</span>
+                </div>
+            </div>
+
+            <button type="submit" id="btn_confirm" disabled
+                    class="w-full py-4 bg-zinc-800 text-gray-500 font-black text-[10px] uppercase rounded-2xl transition-all cursor-not-allowed">
+                Payment Incomplete
+            </button>
+        </form>
+        </div>
+</div>
+
+<script>
+    function calculateTotal() {
+        const baseTotal = {{ total_price | float }};
+        const dp = {{ res.down_payment | float }};
+        const extra = parseFloat(document.getElementById('extra_charge').value) || 0;
+        const cash = parseFloat(document.getElementById('cash_received').value) || 0;
+
+        // 1. Compute Net Due (Ito yung dapat bayaran ni guest sa counter)
+        const netDue = (baseTotal + extra) - dp;
+        
+        // 2. Compute Change base sa Net Due
+        const change = cash - netDue;
+
+        // 3. Update Displays
+        document.getElementById('net_due_display').innerText = '₱' + netDue.toLocaleString(undefined, {minimumFractionDigits: 2});
+        
+        // MAHALAGA: Ito ang isasave natin sa Transaction Table as 'total_amount'
+        // Para sa resibo: Total Due = Net Due
+        document.getElementById('hidden_final_price').value = netDue; 
+
+        const changeDisplay = document.getElementById('change_display');
+        const btnConfirm = document.getElementById('btn_confirm');
+
+        if (change >= 0 && cash > 0) {
+            changeDisplay.innerText = '₱' + change.toLocaleString(undefined, {minimumFractionDigits: 2});
+            btnConfirm.disabled = false;
+            btnConfirm.classList.remove('bg-zinc-800', 'text-gray-500', 'cursor-not-allowed');
+            btnConfirm.classList.add('bg-yellow-500', 'text-black', 'hover:scale-[1.02]');
+            btnConfirm.innerText = "Confirm & Complete Order";
+        } else {
+            changeDisplay.innerText = '₱0.00';
+            btnConfirm.disabled = true;
+            btnConfirm.classList.add('bg-zinc-800', 'text-gray-500', 'cursor-not-allowed');
+            btnConfirm.classList.remove('bg-yellow-500', 'text-black', 'hover:scale-[1.02]');
+            btnConfirm.innerText = "Payment Incomplete";
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "manager/manager_base.html" %}
+{% block manager_content %}
+<div class="min-h-screen bg-[#0f1113] text-gray-100 p-6">
+    <div class="mb-8 border-b border-gray-800 pb-6">
+        <h1 class="text-3xl font-black text-white uppercase tracking-tighter italic">Purchasing <span class="text-blue-500">History Log</span></h1>
+        <p class="text-gray-500 font-mono text-[10px] mt-1 uppercase tracking-widest">Audit Trail for All Supplier Orders</p>
+    </div>
+
+    <div class="space-y-4">
+        {% for log in logs %}
+        <div class="bg-[#1a1d21] border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500/30 transition-all shadow-xl">
+            <div class="p-4 flex justify-between items-center bg-[#24282d]/50 border-b border-gray-800">
+                <div class="flex items-center space-x-4">
+                    <span class="text-xs font-black text-blue-500 font-mono tracking-widest">{{ log.order_reference }}</span>
+                    <span class="text-[10px] text-gray-500 font-bold uppercase italic">{{ log.order_date }}</span>
+                </div>
+                <span class="px-3 py-1 rounded text-[9px] font-black uppercase tracking-widest border border-blue-500/30 text-blue-400 bg-blue-500/5">
+                    {{ log.status }}
+                </span>
+            </div>
+            <div class="p-4">
+                <pre class="text-[10px] font-mono text-gray-400 leading-relaxed whitespace-pre-wrap">{{ log.items_summary }}</pre>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-20 bg-[#1a1d21] rounded-2xl border-2 border-dashed border-gray-800">
+            <p class="text-gray-600 font-black uppercase tracking-[0.3em] text-xs">No Purchasing Logs Found</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

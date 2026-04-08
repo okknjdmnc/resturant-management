@@ -1,0 +1,172 @@
+{% extends "manager/manager_base.html" %}
+
+{% block manager_content %}
+  <div class="p-8 max-w-[1400px] mx-auto" 
+       x-data="{ 
+          selectedStation: 'All Stations', 
+          search: '', 
+          showModal: false, 
+          loading: false,
+          activeStaff: {name: '', role: '', station: '', status: '', image: '', id: ''} 
+       }">
+    
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+        <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar items-center">
+            <span class="text-[9px] font-black text-zinc-600 uppercase tracking-widest mr-2 text-nowrap font-mono">Quick Filter:</span>
+            {% for station in stations %}
+            <button 
+                @click="selectedStation = '{{ station }}'"
+                :class="selectedStation === '{{ station }}' ? 'text-indigo-400 border-indigo-500/50 bg-indigo-500/5' : 'text-zinc-500 border-white/5 bg-zinc-900'"
+                class="whitespace-nowrap border px-6 py-3 rounded-xl text-[8px] font-black uppercase tracking-widest hover:border-white/20 transition-all active:scale-95">
+                {{ station }}
+            </button>
+            {% endfor %}
+        </div>
+
+        <div class="relative w-full md:w-80">
+            <input 
+                x-model="search"
+                type="text" 
+                placeholder="SEARCH STAFF NAME..." 
+                class="w-full bg-zinc-900/80 border border-white/5 rounded-2xl px-5 py-4 text-[10px] font-black uppercase tracking-widest text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition-all placeholder:text-zinc-700"
+            >
+            <div class="absolute right-5 top-1/2 -translate-y-1/2 opacity-20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+        {% for member in staff %}
+        <div 
+            x-show="(selectedStation === 'All Stations' || selectedStation === '{{ member.station }}') && ('{{ member.name }}'.toLowerCase().includes(search.toLowerCase()))"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            class="bg-zinc-900/50 border border-white/5 rounded-[2.5rem] p-6 backdrop-blur-xl group hover:border-white/10 transition-all shadow-xl"
+        >
+            <div class="flex items-start justify-between mb-6">
+                <div class="relative">
+                    <img src="{{ member.image }}" class="w-16 h-16 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500 border border-white/5">
+                    <div class="absolute -top-2 -right-2 w-4 h-4 rounded-full border-4 border-zinc-900 
+                        {% if member.status == 'AVAILABLE' %} bg-emerald-500 {% elif member.status == 'BUSY' %} bg-amber-500 {% else %} bg-zinc-700 {% endif %}">
+                    </div>
+                </div>
+                <span class="text-[8px] font-black text-zinc-700 uppercase tracking-tighter font-mono">ID: 00{{ member.id }}</span>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-sm font-black text-white uppercase tracking-tight truncate">{{ member.name }}</h3>
+                <p class="text-[9px] font-black text-indigo-400/80 uppercase tracking-widest mt-0.5">{{ member.role }}</p>
+            </div>
+
+            <div class="space-y-3 bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                <div class="flex justify-between items-center text-[7px] font-bold text-zinc-500 uppercase tracking-widest">
+                    <span>Station</span>
+                    <span class="text-[8px] font-black text-white italic capitalize">{{ member.station }}</span>
+                </div>
+                <div class="flex justify-between items-center text-[7px] font-bold text-zinc-500 uppercase tracking-widest">
+                    <span>Schedule</span>
+                    <span class="text-[8px] font-black text-zinc-400 italic">{{ member.shift.split(' - ')[0] }}</span>
+                </div>
+            </div>
+            
+            <button 
+                @click="activeStaff = { id: '{{ member.id }}', name: '{{ member.name }}', role: '{{ member.role }}', station: '{{ member.station }}', status: '{{ member.status }}', image: '{{ member.image }}' }; showModal = true"
+                class="w-full mt-6 bg-zinc-800 hover:bg-white hover:text-black py-3 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all">
+                Manage Staff
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div x-cloak x-show="!document.querySelectorAll('.grid > div[style*=\'display: block\']').length && (search !== '' || selectedStation !== 'All Stations')" class="w-full py-40 text-center">
+        <p class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em]">No staff members found</p>
+    </div>
+
+    <div x-show="showModal" x-cloak class="fixed inset-0 z-[100] flex justify-end" @keydown.escape.window="showModal = false">
+        <div x-show="showModal" x-transition:enter="transition opacity-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="showModal = false"></div>
+        
+        <div x-show="showModal" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" class="relative bg-zinc-950 border-l border-white/10 w-full max-w-md h-full shadow-2xl flex flex-col p-10">
+            <div class="flex justify-between items-start mb-10">
+                <div class="flex items-center gap-4">
+                    <img :src="activeStaff.image" class="w-16 h-16 rounded-2xl border border-white/10 object-cover">
+                    <div>
+                        <h2 class="text-xl font-black text-white uppercase italic tracking-tighter" x-text="activeStaff.name"></h2>
+                        <p class="text-indigo-400 text-[9px] font-black uppercase tracking-widest" x-text="activeStaff.role"></p>
+                    </div>
+                </div>
+                <button @click="showModal = false" class="text-zinc-500 hover:text-white transition-all underline text-[10px] font-black uppercase tracking-widest">Close</button>
+            </div>
+
+            <div class="space-y-10 flex-1 overflow-y-auto no-scrollbar">
+                <div>
+                    <label class="text-[8px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-4 block">Deployment Station</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        {% for st in stations if st != 'All Stations' %}
+                        <button @click="activeStaff.station = '{{ st }}'" 
+                                :class="activeStaff.station === '{{ st }}' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-zinc-900 text-zinc-500 border-white/5'"
+                                class="px-4 py-3 rounded-xl border text-[8px] font-black uppercase tracking-widest transition-all">{{ st }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[8px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-4 block">Availability Status</label>
+                    <div class="space-y-2">
+                        <template x-for="status in ['AVAILABLE', 'BUSY', 'OFF DUTY']">
+                            <button @click="activeStaff.status = status"
+                                    :class="activeStaff.status === status ? 'border-white bg-white/5 text-white' : 'border-white/5 bg-zinc-900 text-zinc-500'"
+                                    class="w-full flex justify-between items-center px-6 py-4 rounded-2xl border transition-all text-[9px] font-black uppercase tracking-widest">
+                                <span x-text="status"></span>
+                                <div class="w-1.5 h-1.5 rounded-full" :class="status === 'AVAILABLE' ? 'bg-emerald-500' : (status === 'BUSY' ? 'bg-amber-500' : 'bg-zinc-700')"></div>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-10 border-t border-white/5">
+                <button 
+                    @click="
+                        loading = true;
+                        fetch('/manager/staff/update', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                id: activeStaff.id,
+                                status: activeStaff.status,
+                                station: activeStaff.station
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.success) {
+                                window.location.reload(); 
+                            } else {
+                                alert('Error: ' + data.message);
+                            }
+                        })
+                        .finally(() => loading = false)
+                    "
+                    :disabled="loading"
+                    class="w-full bg-white text-black py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-indigo-500 hover:text-white transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-wait"
+                >
+                    <span x-show="!loading">Update Staff Info</span>
+                    <span x-show="loading">Saving Changes...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  <style>
+    [x-cloak] { display: none !important; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+{% endblock %}

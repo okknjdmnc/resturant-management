@@ -1,0 +1,70 @@
+{% extends "manager/manager_base.html" %}
+{% block manager_content %}
+<div class="min-h-screen bg-[#0a0c0e] text-gray-100 p-6">
+
+    <div class="mb-10 flex justify-between items-center border-b-2 border-orange-500/50 pb-6">
+        <div>
+            <h1 class="text-4xl font-black text-white tracking-tighter uppercase flex items-center">
+                <span class="bg-orange-600 text-black px-3 py-1 rounded mr-3">HOT</span> 
+                KITCHEN <span class="text-orange-500 ml-2">STOCKS</span>
+            </h1>
+            <p class="text-gray-500 font-mono text-sm mt-1 tracking-widest">LIVE DISPATCH UNIT — GOJO HOUSE NOVALICHES</p>
+        </div>
+        <div class="text-right bg-orange-500/10 p-4 border border-orange-500/20 rounded-lg">
+            <span class="text-[10px] text-orange-400 uppercase font-black tracking-widest">Operating Date</span>
+            <div class="text-2xl font-mono font-bold text-white">{{ today }}</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for stock in kitchen_stocks %}
+        <div class="bg-[#14161a] border-2 border-gray-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden group hover:border-orange-500/50 transition-all">
+            <div class="absolute -right-4 -bottom-4 text-gray-800/20 text-7xl group-hover:text-orange-500/10 transition-colors">🔥</div>
+            
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] font-black bg-orange-500 text-black px-2 py-0.5 rounded uppercase">Daily Supply</span>
+                <span class="text-[10px] text-gray-600 font-mono italic">#REQ-{{ loop.index }}</span>
+            </div>
+
+            <h3 class="text-xl font-black text-white uppercase leading-tight mb-2 min-h-[3rem]">
+                {{ stock.item_name }}
+            </h3>
+
+            <div class="flex items-baseline space-x-2 border-t border-gray-800 pt-4 mt-2">
+                <span class="text-4xl font-black text-orange-500 font-mono tracking-tighter">
+                    {{ "{:,.1f}".format(stock.total_qty) }}
+                </span>
+                <span class="text-lg font-bold text-gray-500 uppercase italic">{{ stock.unit }}</span>
+            </div>
+            
+            <p class="text-[9px] text-gray-600 font-bold uppercase mt-4 flex items-center italic">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-2"></span>
+                Ready for Preparation
+            </p>
+        </div>
+        {% else %}
+        <div class="col-span-full py-20 text-center border-2 border-dashed border-gray-800 rounded-3xl">
+            <div class="text-6xl mb-4">🧊</div>
+            <h2 class="text-2xl font-black text-gray-700 uppercase italic">Kitchen is Cold</h2>
+            <p class="text-gray-500 font-mono text-sm mt-2 uppercase tracking-widest">No stock transfers recorded for today.</p>
+            <a href="{{ url_for('manager.inventory_overview') }}" class="mt-6 inline-block bg-white text-black px-6 py-2 rounded-full font-black text-xs hover:bg-orange-500 transition-colors">GO TO INVENTORY</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-12 bg-[#14161a] rounded-xl border border-gray-800 p-6 shadow-xl">
+        <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-4 flex items-center">
+            <span class="mr-2">📋</span> Recent Dispatch Log
+        </h4>
+        <div class="space-y-3">
+            {% for stock in kitchen_stocks %}
+            <div class="flex justify-between items-center text-xs border-b border-gray-800/50 pb-2">
+                <span class="font-bold text-gray-400">{{ stock.item_name }}</span>
+                <span class="font-mono text-orange-400">+{{ stock.total_qty }} {{ stock.unit }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
